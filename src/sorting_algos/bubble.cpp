@@ -1,7 +1,5 @@
 #include "bubble.h"
 
-#include <algorithm>
-
 bool Bubble::next(std::vector<size_t>& data) {
   if (on_compare_step_) {
     comparison_step();

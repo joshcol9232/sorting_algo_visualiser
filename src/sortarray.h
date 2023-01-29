@@ -18,6 +18,7 @@ class SortArray {
   void sort(SortAlgo* algo);
 
   void shuffle();
+  void cancel_sort();
 
  private:
   std::vector<size_t> data_;

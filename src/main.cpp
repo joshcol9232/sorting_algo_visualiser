@@ -6,7 +6,10 @@
 #include "constants.h"
 #include "sortarray.h"
 #include "sortalgo.h"
+
 #include "sorting_algos/bubble.h"
+#include "sorting_algos/bogo.h"
+
 
 int main() {
   // setup
@@ -42,11 +45,14 @@ int main() {
     sf::Time dt_Time = deltaClock.restart();
 
     // Process inputs
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {         // Shuffle
       sort_array.shuffle();
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {  // Cancel sort
+      sort_array.cancel_sort();
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
       sort_array.sort(new Bubble());
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+      sort_array.sort(new Bogo());
     }
 
     // Update

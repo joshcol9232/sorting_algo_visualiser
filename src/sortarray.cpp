@@ -91,7 +91,14 @@ void SortArray::shuffle() {
   sorted_ = false;
 }
 
+void SortArray::cancel_sort() {
+  do_sort_ = false;
+  algo_->reset_vecs();
+}
+
 void SortArray::sort(SortAlgo* algo) {
   algo_.reset(algo);
-  do_sort_ = true;
+  if (!sorted_) {
+    do_sort_ = true;
+  }
 }
