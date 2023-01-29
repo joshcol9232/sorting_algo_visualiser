@@ -22,6 +22,11 @@ void SortArray::step() {
   if (!sorted_ && do_sort_) {
     algo_->perform_swaps(data_);
     sorted_ = algo_->next(data_);
+
+    if (sorted_) {  // Finished sorting
+      do_sort_ = false;
+      algo_->reset_vecs();
+    }
   }
 }
 
@@ -52,6 +57,7 @@ void SortArray::draw(sf::RenderWindow& window) const {
     if (sorted_) {
       base_shape.setFillColor(sf::Color::Green);
     } else {
+      /*  // DEBUGGING
       std::cout << "SWAPPING: {";
       for (const auto& swp : swapping)
         std::cout << swp << ", ";
@@ -62,6 +68,7 @@ void SortArray::draw(sf::RenderWindow& window) const {
         std::cout << cmp << ", ";
       std::cout << "}" << std::endl;
       std::cout << "---------------------" << std::endl;
+      */
 
       if (std::find(swapping.begin(), swapping.end(), idx) != swapping.end()) {
         base_shape.setFillColor(sf::Color::Red);

@@ -15,6 +15,7 @@ class SortAlgo {
 
   const std::vector<size_t>& get_comparing() const { return comparing_; }
   const std::vector<size_t>& get_swapping() const { return swapping_; }
+  void reset_vecs();
 
  protected:
   bool check_sorted(std::vector<size_t>& data) const;

@@ -14,10 +14,9 @@ int main() {
                                         constants::WINDOW_HEIGHT),
                           "Sorting Vis");
 
-  window.setFramerateLimit(60);
+//  window.setFramerateLimit(60);
 
   sf::Time step_clock;
-
   sf::Clock deltaClock;
 
   // ------ Set up sprites ------
@@ -30,8 +29,7 @@ int main() {
 
   // ----------------------------
 
-  SortArray sort_array(10);
-//  sort_array.set_algo();
+  SortArray sort_array(constants::NUM_ELEMENTS);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -42,8 +40,6 @@ int main() {
     }
 
     sf::Time dt_Time = deltaClock.restart();
-
-//    const double dt = static_cast<double>(dt_Time.asSeconds());
 
     // Process inputs
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {

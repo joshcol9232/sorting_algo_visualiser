@@ -22,3 +22,8 @@ bool SortAlgo::check_sorted(std::vector<size_t>& data) const {
 
   return true;
 }
+
+void SortAlgo::reset_vecs() {
+  comparing_.clear();
+  swapping_.clear();
+}
