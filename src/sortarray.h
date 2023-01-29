@@ -35,12 +35,16 @@ class SortArray {
 
   void reset_metadata();
 
+  void reset_swap_change() { swap_change_ = false; }
+  bool get_swap_change() { return swap_change_; }
+
  private:
   std::vector<size_t> data_;
   std::mutex data_mutex_;
 //  sf::Time step_timer;
   int accessing_;
   int swapping_[2];
+  bool swap_change_;   // For playing audio..
 };
 
 #endif // SORTARRAY_H

@@ -43,6 +43,7 @@ void SortArray::swap(const size_t a, const size_t b) {
   accessing_ = -1;
   swapping_[0] = a;
   swapping_[1] = b;
+  swap_change_ = true;
   sf::sleep(constants::SWAP_COST_DIV_2);
   // ...
   {

@@ -6,38 +6,18 @@
 #include <random>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "constants.h"
 #include "sortarray.h"
+#include "sorting_algorithms.h"
 
 namespace {
 
-void bubble_sort(SortArray& arr) {
-  bool sorted = false;
-
-  while (!sorted) {
-    sorted = true;
-    for (size_t i = 0; i < arr.size()-1; ++i) {
-      if (arr[i] > arr[i + 1]) {
-        arr.swap(i, i+1);
-        sorted = false;
-      }
-    }
-  }
-}
-
-void bogo_sort(SortArray& arr) {
-  bool sorted = false;
-
-  // Choose two random elements to swap
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<size_t> distrib(0, arr.size()-1);
-
-  while (!sorted) {
-    arr.swap(distrib(gen), distrib(gen));
-    sorted = arr.is_sorted();
-  }
+float get_pitch(size_t value, size_t data_size) {
+  return ((static_cast<float>(value)+1.0) /
+           static_cast<float>(data_size)) *
+          constants::PITCH_MULTIPLIER + 0.1;
 }
 
 }  // namespace
@@ -53,7 +33,6 @@ int main() {
 
   // ------ Load sound ------
 
-  /*
   sf::SoundBuffer snd_buff;
   if (!snd_buff.loadFromFile(constants::SOUND_FILE)) {
     throw std::runtime_error("Could not load sound.");
@@ -62,7 +41,6 @@ int main() {
   sf::Sound beep2;
   beep1.setBuffer(snd_buff);
   beep2.setBuffer(snd_buff);
-  */
 
   // ----------------------------
 
@@ -111,7 +89,8 @@ int main() {
     window.clear(sf::Color::Black);
 
     for (size_t idx = 0; idx < sort_array.size(); ++idx) {
-      y_size = (static_cast<float>(sort_array.instant_access(idx)+1) /
+      const size_t val = sort_array.instant_access(idx);
+      y_size = (static_cast<float>(val+1) /
                 static_cast<float>(sort_array.size())) *
                static_cast<float>(constants::WINDOW_HEIGHT);
 
@@ -126,8 +105,30 @@ int main() {
         base_shape.setFillColor(sf::Color::Green);
       } else {
         const int* swapping = sort_array.get_swapping();
-        if (idx == swapping[0] || idx == swapping[1]) {
+        int val_swapped = -1;
+        if (idx == swapping[0]) {
+          val_swapped = 0;
+        } else if (idx == swapping[1]) {
+          val_swapped = 1;
+        }
+
+        if (val_swapped > 0) {
           base_shape.setFillColor(sf::Color::Red);
+
+          // AUDIO
+          if (sort_array.get_swap_change()) {  // If swap has changed, play a sound
+            beep1.setPitch(get_pitch(val, sort_array.size()));
+            if (val_swapped == 0) {
+              beep2.setPitch(get_pitch(swapping[1], sort_array.size()));
+            } else {
+              beep2.setPitch(get_pitch(swapping[0], sort_array.size()));
+            }
+
+            beep1.play();
+            beep2.play();
+            sort_array.reset_swap_change();
+          }
+          // -----
         } else {
           const int acc = sort_array.get_accessing();
           if (idx == acc) {
