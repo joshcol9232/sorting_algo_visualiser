@@ -3,33 +3,39 @@
 
 #include <cstddef>
 #include <vector>
-#include <memory>
+#include <SFML/System.hpp>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+#include "constants.h"
 
-#include "sortalgo.h"
+/* Idea:
+ * Have an array in a thread that sleeps
+*/
 
 class SortArray {
  public:
   SortArray(size_t size);
-
-  void step();
-  void draw(sf::RenderWindow& window) const;
-  void sound(sf::Sound& beep1, sf::Sound& beep2) const;
-  void sort(SortAlgo* algo);
-
   void shuffle();
-  void cancel_sort();
+
+  const size_t& operator[](const size_t idx);
+
+  size_t size() const { return data_.size(); }
+  bool is_sorted() const;
+
+  void swap(const size_t a, const size_t b);
+
+  // Allow const access to raw vector (rendering etc)
+  const std::vector<size_t>& data() { return data_; }
+
+  int get_accessing() const { return accessing_; }
+  const int* get_swapping() const { return swapping_; }
+
+  void reset_metadata();
 
  private:
   std::vector<size_t> data_;
-  std::unique_ptr<SortAlgo> algo_;
-  bool sorted_;
-  bool do_sort_;
-
-  // Rendering
-  float bar_width_;
+//  sf::Time step_timer;
+  int accessing_;
+  int swapping_[2];
 };
 
 #endif // SORTARRAY_H
