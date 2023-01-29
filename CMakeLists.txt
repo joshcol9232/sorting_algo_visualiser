@@ -9,11 +9,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SFML 2.5.1 COMPONENTS system graphics audio network REQUIRED)
 
-add_executable(sorting main.cpp
-               constants.h
-               sortarray.h sortarray.cpp
-               sortalgo.h sortalgo.cpp
-               bubble.h bubble.cpp)
+add_executable(sorting src/main.cpp
+               src/sortalgo.cpp src/sortalgo.h
+               src/sortarray.cpp src/sortarray.h
+               src/constants.h
+               src/sorting_algos/bubble.cpp src/sorting_algos/bubble.h)
 
 target_link_libraries(sorting PRIVATE sfml-audio sfml-graphics sfml-network sfml-system)
 

@@ -1,7 +1,7 @@
 #ifndef BUBBLE_H
 #define BUBBLE_H
 
-#include "sortalgo.h"
+#include "../sortalgo.h"
 
 // Bubble sort
 class Bubble : public SortAlgo {

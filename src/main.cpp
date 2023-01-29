@@ -6,7 +6,7 @@
 #include "constants.h"
 #include "sortarray.h"
 #include "sortalgo.h"
-#include "bubble.h"
+#include "sorting_algos/bubble.h"
 
 int main() {
   // setup

@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "constants.h"
-#include "bubble.h"
+#include "sorting_algos/bubble.h"
 
 SortArray::SortArray(size_t size) :
   algo_(new Bubble()),
