@@ -2,6 +2,7 @@
 
 #include <numeric>
 #include <random>
+#include <iostream>
 
 #include "constants.h"
 #include "bubble.h"
@@ -41,15 +42,27 @@ void SortArray::draw(sf::RenderWindow& window) const {
               static_cast<float>(data_.size())) *
              static_cast<float>(constants::WINDOW_HEIGHT);
 
+    // Set position and size
     base_shape.setSize(sf::Vector2f(bar_width_, y_size));
-
-    // Position - centred
     base_shape.setPosition(bar_step * idx, constants::WINDOW_HEIGHT - y_size);
 
     // Set colour
+    base_shape.setFillColor(sf::Color::White);
+
     if (sorted_) {
       base_shape.setFillColor(sf::Color::Green);
     } else {
+      std::cout << "SWAPPING: {";
+      for (const auto& swp : swapping)
+        std::cout << swp << ", ";
+      std::cout << "}" << std::endl;
+
+      std::cout << "COMPARING: {";
+      for (const auto& cmp : comparing)
+        std::cout << cmp << ", ";
+      std::cout << "}" << std::endl;
+      std::cout << "---------------------" << std::endl;
+
       if (std::find(swapping.begin(), swapping.end(), idx) != swapping.end()) {
         base_shape.setFillColor(sf::Color::Red);
       } else if (std::find(comparing.begin(), comparing.end(), idx) != comparing.end()) {
