@@ -4,6 +4,9 @@
 #include <SFML/Graphics.hpp>
 
 #include "constants.h"
+#include "sortarray.h"
+#include "sortalgo.h"
+#include "bubble.h"
 
 int main() {
   // setup
@@ -11,7 +14,10 @@ int main() {
                                         constants::WINDOW_HEIGHT),
                           "Sorting Vis");
 
-//  window.setFramerateLimit(60);
+  window.setFramerateLimit(60);
+
+  sf::Time step_clock;
+
   sf::Clock deltaClock;
 
   // ------ Set up sprites ------
@@ -24,6 +30,9 @@ int main() {
 
   // ----------------------------
 
+  SortArray sort_array(10);
+//  sort_array.set_algo();
+
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -33,19 +42,27 @@ int main() {
     }
 
     sf::Time dt_Time = deltaClock.restart();
-    const double dt = static_cast<double>(dt_Time.asSeconds());
+
+//    const double dt = static_cast<double>(dt_Time.asSeconds());
 
     // Process inputs
-//    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-//      right_paddle.move(dt, false);
-//    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-//      right_paddle.move(dt, true);
-//    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+      sort_array.shuffle();
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+      sort_array.sort(new Bubble());
+    }
 
     // Update
+    step_clock += dt_Time;
+    if (step_clock > constants::STEP_PERIOD) {
+      sort_array.step();
+      step_clock = sf::Time();  // Reset clock
+    }
 
     // Draw
     window.clear(sf::Color::Black);
+    sort_array.draw(window);
 
     window.display();
   }
