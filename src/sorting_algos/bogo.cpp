@@ -10,7 +10,7 @@ bool Bogo::next(std::vector<size_t>& data) {
     on_compare_step_ = false;
   } else {
     // Swap
-    swapping_.push_back(comparing_[2]);
+    swapping_.push_back(comparing_[0]);
     swapping_.push_back(comparing_[1]);
 
     on_compare_step_ = true;
