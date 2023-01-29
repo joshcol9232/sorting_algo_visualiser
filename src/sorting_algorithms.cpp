@@ -2,7 +2,7 @@
 
 #include <random>
 
-void bubble_sort(SortArray& arr) {
+void bubble_sort(SortView& arr) {
   bool sorted = false;
 
   while (!sorted) {
@@ -16,7 +16,7 @@ void bubble_sort(SortArray& arr) {
   }
 }
 
-void bogo_sort(SortArray& arr) {
+void bogo_sort(SortView& arr) {
   bool sorted = false;
 
   // Choose two random elements to swap

@@ -12,7 +12,7 @@ configure_file(${CMAKE_SOURCE_DIR}/assets/Blop.wav
                COPYONLY)
 
 add_executable(sorting src/main.cpp
-               src/sortarray.cpp src/sortarray.h
+               src/sortview.cpp src/sortview.h
                src/constants.h
                src/sorting_algorithms.cpp src/sorting_algorithms.h)
 

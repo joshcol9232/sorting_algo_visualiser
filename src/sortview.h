@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <vector>
 #include <mutex>
+#include <memory>
 #include <SFML/System.hpp>
 
 #include "constants.h"
@@ -12,39 +13,46 @@
  * Have an array in a thread that sleeps
 */
 
-class SortArray {
+class SortView {
  public:
-  SortArray(size_t size);
+  SortView(std::shared_ptr<std::vector<size_t>> data, size_t start, size_t end);
   void shuffle();
 
   const size_t& operator[](const size_t idx);
 
-  size_t size() const { return data_.size(); }
+  size_t size() const { return end_ - start_; }
   bool is_sorted() const;
 
   void swap(const size_t a, const size_t b);
 
   // Allow const access to raw vector (rendering etc)
   const size_t& instant_access(const size_t idx) {
-    std::lock_guard<std::mutex> data_lock(data_mutex_);
-    return data_[idx];
+    std::lock_guard<std::mutex> data_lock(local_mutex_);
+    return data_->at(idx);
   }
 
+  /*
   int get_accessing() const { return accessing_; }
   const int* get_swapping() const { return swapping_; }
+  */
 
+  /*
   void reset_metadata();
+  */
 
+  /*
   void reset_swap_change() { swap_change_ = false; }
   bool get_swap_change() { return swap_change_; }
+  */
 
  private:
-  std::vector<size_t> data_;
-  std::mutex data_mutex_;
+  std::shared_ptr<std::vector<size_t>> data_;  // Assumes this view only accesses it's own points
+  size_t start_, end_;  // Start & end index of this data
+  std::mutex local_mutex_;
 //  sf::Time step_timer;
-  int accessing_;
-  int swapping_[2];
-  bool swap_change_;   // For playing audio..
+//  int accessing_;
+//  int swapping_[2];
+//  bool swap_change_;   // For playing audio..
 };
 
 #endif // SORTARRAY_H

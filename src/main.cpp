@@ -4,12 +4,14 @@
 #include <memory>
 #include <functional>
 #include <random>
+#include <numeric>
+
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
 #include "constants.h"
-#include "sortarray.h"
+#include "sortview.h"
 #include "sorting_algorithms.h"
 
 namespace {
@@ -29,7 +31,10 @@ int main() {
                           "Sorting Visualiser");
 
 //  window.setFramerateLimit(60);
-  SortArray sort_array(constants::NUM_ELEMENTS);
+  auto data = std::make_shared<std::vector<size_t>>(constants::NUM_ELEMENTS, 0);
+  std::iota(data->begin(), data->end(), 0);
+
+  SortView main_view(data, 0, data->size());
 
   // ------ Load sound ------
 
@@ -49,16 +54,16 @@ int main() {
   std::thread sorting_thread;
 
   const float bar_step = static_cast<float>(constants::WINDOW_WIDTH) /
-                         sort_array.size();
+                         main_view.size();
 
   sf::RectangleShape base_shape(sf::Vector2f(bar_step, 1.0f));
 
-  auto run_sorting_thread = [&](std::function<void(SortArray&)> F) {
+  auto run_sorting_thread = [&](std::function<void(SortView&)> F) {
     sorting = true;
 
     sorting_thread = std::thread([&](){
-      F(sort_array);
-      sort_array.reset_metadata();
+      F(main_view);
+//      main_view.reset_metadata();
       sorting = false;
       sorted = true;
     });
@@ -77,7 +82,7 @@ int main() {
 
     // Process inputs
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {         // Shuffle
-      sort_array.shuffle();
+      main_view.shuffle();
       sorted = false;
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
       run_sorting_thread(bubble_sort);
@@ -88,10 +93,10 @@ int main() {
     // Draw
     window.clear(sf::Color::Black);
 
-    for (size_t idx = 0; idx < sort_array.size(); ++idx) {
-      const size_t val = sort_array.instant_access(idx);
+    for (size_t idx = 0; idx < main_view.size(); ++idx) {
+      const size_t val = main_view.instant_access(idx);
       y_size = (static_cast<float>(val+1) /
-                static_cast<float>(sort_array.size())) *
+                static_cast<float>(main_view.size())) *
                static_cast<float>(constants::WINDOW_HEIGHT);
 
       // Set position and size
@@ -103,8 +108,8 @@ int main() {
 
       if (sorted) {
         base_shape.setFillColor(sf::Color::Green);
-      } else {
-        const int* swapping = sort_array.get_swapping();
+      } /* else {
+        const int* swapping = main_view.get_swapping();
         int val_swapped = -1;
         if (idx == swapping[0]) {
           val_swapped = 0;
@@ -135,7 +140,7 @@ int main() {
             base_shape.setFillColor(sf::Color::Cyan);
           }
         }
-      }
+      } */
 
       window.draw(base_shape);
     }
