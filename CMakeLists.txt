@@ -7,6 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SFML 2.5.1 COMPONENTS system graphics audio network REQUIRED)
 
+configure_file(${CMAKE_SOURCE_DIR}/assets/Blop.wav
+               ${CMAKE_CURRENT_BINARY_DIR}/Blop.wav
+               COPYONLY)
+
 add_executable(sorting src/main.cpp
                src/sortalgo.cpp src/sortalgo.h
                src/sortarray.cpp src/sortarray.h

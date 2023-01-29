@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "sortalgo.h"
 
@@ -15,6 +16,7 @@ class SortArray {
 
   void step();
   void draw(sf::RenderWindow& window) const;
+  void sound(sf::Sound& beep1, sf::Sound& beep2) const;
   void sort(SortAlgo* algo);
 
   void shuffle();
@@ -26,6 +28,7 @@ class SortArray {
   bool sorted_;
   bool do_sort_;
 
+  // Rendering
   float bar_width_;
 };
 

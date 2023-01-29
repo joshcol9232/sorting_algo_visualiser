@@ -3,9 +3,20 @@
 #include <numeric>
 #include <random>
 #include <iostream>
+#include <stdexcept>
 
 #include "constants.h"
 #include "sorting_algos/bubble.h"
+
+namespace {
+
+float get_pitch(size_t value, size_t data_size) {
+  return ((static_cast<float>(value)+1.0) /
+           static_cast<float>(data_size)) *
+          constants::PITCH_MULTIPLIER + 0.1;
+}
+
+}  // namespace
 
 SortArray::SortArray(size_t size) :
   algo_(new Bubble()),
@@ -27,6 +38,17 @@ void SortArray::step() {
       do_sort_ = false;
       algo_->reset_vecs();
     }
+  }
+}
+
+void SortArray::sound(sf::Sound& beep1, sf::Sound& beep2) const {
+  const std::vector<size_t>& swapping = algo_->get_swapping();
+
+  for (size_t i = 0; i+1 < swapping.size(); i += 2) {
+    beep1.setPitch(get_pitch(data_[swapping[i]], data_.size()));
+    beep1.play();
+    beep2.setPitch(get_pitch(data_[swapping[i+1]], data_.size()));
+    beep2.play();
   }
 }
 

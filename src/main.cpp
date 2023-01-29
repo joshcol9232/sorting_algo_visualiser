@@ -22,13 +22,16 @@ int main() {
   sf::Time step_clock;
   sf::Clock deltaClock;
 
-  // ------ Set up sprites ------
+  // ------ Load sound ------
 
-//  sf::RectangleShape bar_shape(sf::Vector2f(constants::BAR_WIDTH,
-//                                            constants::BAR_HEIGHT));
-//  paddle_shape.setFillColor(sf::Color::White);
-//  paddle_shape.setOrigin(constants::PADDLE_WIDTH/2.0,
-//                         constants::PADDLE_HEIGHT/2.0);
+  sf::SoundBuffer snd_buff;
+  if (!snd_buff.loadFromFile(constants::SOUND_FILE)) {
+    throw std::runtime_error("Could not load sound.");
+  }
+  sf::Sound beep1;
+  sf::Sound beep2;
+  beep1.setBuffer(snd_buff);
+  beep2.setBuffer(snd_buff);
 
   // ----------------------------
 
@@ -59,6 +62,7 @@ int main() {
     step_clock += dt_Time;
     if (step_clock > constants::STEP_PERIOD) {
       sort_array.step();
+      sort_array.sound(beep1, beep2);
       step_clock = sf::Time();  // Reset clock
     }
 

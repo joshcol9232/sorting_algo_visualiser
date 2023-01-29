@@ -11,7 +11,7 @@ class Bogo : public SortAlgo {
   bool next(std::vector<size_t>& data) override;
 
  private:
-  void comparison_step();
+  void comparison_step(const size_t data_size);
   void swap_step();
 
   bool on_compare_step_;
