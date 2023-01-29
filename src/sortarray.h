@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <mutex>
 #include <SFML/System.hpp>
 
 #include "constants.h"
@@ -24,7 +25,10 @@ class SortArray {
   void swap(const size_t a, const size_t b);
 
   // Allow const access to raw vector (rendering etc)
-  const std::vector<size_t>& data() { return data_; }
+  const size_t& instant_access(const size_t idx) {
+    std::lock_guard<std::mutex> data_lock(data_mutex_);
+    return data_[idx];
+  }
 
   int get_accessing() const { return accessing_; }
   const int* get_swapping() const { return swapping_; }
@@ -33,6 +37,7 @@ class SortArray {
 
  private:
   std::vector<size_t> data_;
+  std::mutex data_mutex_;
 //  sf::Time step_timer;
   int accessing_;
   int swapping_[2];

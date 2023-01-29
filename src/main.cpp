@@ -2,6 +2,8 @@
 #include <string>
 #include <thread>
 #include <memory>
+#include <functional>
+#include <random>
 
 #include <SFML/Graphics.hpp>
 
@@ -24,13 +26,27 @@ void bubble_sort(SortArray& arr) {
   }
 }
 
+void bogo_sort(SortArray& arr) {
+  bool sorted = false;
+
+  // Choose two random elements to swap
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<size_t> distrib(0, arr.size()-1);
+
+  while (!sorted) {
+    arr.swap(distrib(gen), distrib(gen));
+    sorted = arr.is_sorted();
+  }
+}
+
 }  // namespace
 
 int main() {
   // setup
   sf::RenderWindow window(sf::VideoMode(constants::WINDOW_WIDTH,
                                         constants::WINDOW_HEIGHT),
-                          "Sorting Vis");
+                          "Sorting Visualiser");
 
 //  window.setFramerateLimit(60);
   SortArray sort_array(constants::NUM_ELEMENTS);
@@ -58,8 +74,20 @@ int main() {
                          sort_array.size();
 
   sf::RectangleShape base_shape(sf::Vector2f(bar_step, 1.0f));
+
+  auto run_sorting_thread = [&](std::function<void(SortArray&)> F) {
+    sorting = true;
+
+    sorting_thread = std::thread([&](){
+      F(sort_array);
+      sort_array.reset_metadata();
+      sorting = false;
+      sorted = true;
+    });
+    sorting_thread.detach();
+  };
+
   float y_size;
-  size_t idx(0);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -74,23 +102,16 @@ int main() {
       sort_array.shuffle();
       sorted = false;
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-      sorting = true;
-
-      sorting_thread = std::thread([&sort_array, &sorting, &sorted](){
-        bubble_sort(sort_array);
-        sort_array.reset_metadata();
-        sorting = false;
-        sorted = true;
-      });
-      sorting_thread.detach();
+      run_sorting_thread(bubble_sort);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+      run_sorting_thread(bogo_sort);
     }
 
     // Draw
     window.clear(sf::Color::Black);
 
-    idx = 0;
-    for (const auto& val : sort_array.data()) {
-      y_size = (static_cast<float>(val+1) /
+    for (size_t idx = 0; idx < sort_array.size(); ++idx) {
+      y_size = (static_cast<float>(sort_array.instant_access(idx)+1) /
                 static_cast<float>(sort_array.size())) *
                static_cast<float>(constants::WINDOW_HEIGHT);
 
@@ -104,19 +125,6 @@ int main() {
       if (sorted) {
         base_shape.setFillColor(sf::Color::Green);
       } else {
-        /* // DEBUGGING
-        std::cout << "SWAPPING: {";
-        for (const auto& swp : swapping)
-          std::cout << swp << ", ";
-        std::cout << "}" << std::endl;
-
-        std::cout << "COMPARING: {";
-        for (const auto& cmp : comparing)
-          std::cout << cmp << ", ";
-        std::cout << "}" << std::endl;
-        std::cout << "---------------------" << std::endl;
-        */
-
         const int* swapping = sort_array.get_swapping();
         if (idx == swapping[0] || idx == swapping[1]) {
           base_shape.setFillColor(sf::Color::Red);
@@ -129,7 +137,6 @@ int main() {
       }
 
       window.draw(base_shape);
-      ++idx;
     }
 
     window.display();

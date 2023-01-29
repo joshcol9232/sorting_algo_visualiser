@@ -4,6 +4,7 @@
 #include <random>
 #include <iostream>
 #include <stdexcept>
+#include <assert.h>
 
 #include "constants.h"
 
@@ -32,18 +33,24 @@ void SortArray::shuffle() {
   std::random_device rd;
   std::mt19937 g(rd());
 
+  std::lock_guard<std::mutex> data_lock(data_mutex_);
   std::shuffle(data_.begin(), data_.end(), g);
 }
 
 void SortArray::swap(const size_t a, const size_t b) {
+  assert(a != b);
+
   accessing_ = -1;
   swapping_[0] = a;
   swapping_[1] = b;
   sf::sleep(constants::SWAP_COST_DIV_2);
   // ...
-  const size_t temp = data_[a];
-  data_[a] = data_[b];
-  data_[b] = temp;
+  {
+    std::lock_guard<std::mutex> data_lock(data_mutex_);
+    const size_t temp = data_[a];
+    data_[a] = data_[b];
+    data_[b] = temp;
+  }
   sf::sleep(constants::SWAP_COST_DIV_2);
 }
 
@@ -53,6 +60,7 @@ const size_t& SortArray::operator[](const size_t idx) {
   accessing_ = idx;
   sf::sleep(constants::ACCESS_COST);
   // ...
+  std::lock_guard<std::mutex> data_lock(data_mutex_);
   return data_[idx];
 }
 
