@@ -1,10 +1,11 @@
-#ifndef SORTING_ALGORITHMS_H
-#define SORTING_ALGORITHMS_H
+#pragma once
 
-#include "sortview.h"
+#include <memory>
+#include "sort_array.h"
 
-void bubble_sort(SortView& arr);
+void bubble_sort(std::shared_ptr<SortArray> arr);
 
-void bogo_sort(SortView& arr);
+void bogo_sort(std::shared_ptr<SortArray> arr);
 
-#endif // SORTING_ALGORITHMS_H
+std::shared_ptr<SortArray> quick_sort(std::shared_ptr<SortArray> arr);
+

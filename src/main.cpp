@@ -2,6 +2,7 @@
 #include <string>
 #include <thread>
 #include <memory>
+#include <mutex>
 #include <functional>
 #include <random>
 #include <numeric>
@@ -11,8 +12,8 @@
 #include <SFML/Audio.hpp>
 
 #include "constants.h"
-#include "sortview.h"
 #include "sorting_algorithms.h"
+#include "sort_array.h"
 
 namespace {
 
@@ -31,13 +32,15 @@ int main() {
                           "Sorting Visualiser");
 
 //  window.setFramerateLimit(60);
-  auto data = std::make_shared<std::vector<size_t>>(constants::NUM_ELEMENTS, 0);
-  std::iota(data->begin(), data->end(), 0);
+  std::vector<size_t> base_data(constants::NUM_ELEMENTS, 0);
+  std::iota(base_data.begin(), base_data.end(), 0);
 
-  SortView main_view(data, 0, data->size());
+  auto base = std::make_shared<SortArray>(std::move(base_data));
+  std::mutex base_mutex;
 
   // ------ Load sound ------
 
+  /*
   sf::SoundBuffer snd_buff;
   if (!snd_buff.loadFromFile(constants::SOUND_FILE)) {
     throw std::runtime_error("Could not load sound.");
@@ -46,31 +49,25 @@ int main() {
   sf::Sound beep2;
   beep1.setBuffer(snd_buff);
   beep2.setBuffer(snd_buff);
+  */
 
   // ----------------------------
 
-  bool sorted = true;
   bool sorting = false;
   std::thread sorting_thread;
 
-  const float bar_step = static_cast<float>(constants::WINDOW_WIDTH) /
-                         main_view.size();
+  sf::RectangleShape base_shape(sf::Vector2f(constants::BAR_STEP, 1.0f));
 
-  sf::RectangleShape base_shape(sf::Vector2f(bar_step, 1.0f));
-
-  auto run_sorting_thread = [&](std::function<void(SortView&)> F) {
+  auto run_sorting_thread = [&](std::function<void(std::shared_ptr<SortArray>)> F) {
     sorting = true;
 
     sorting_thread = std::thread([&](){
-      F(main_view);
-//      main_view.reset_metadata();
+      F(base);
+      // main_view.reset_metadata();
       sorting = false;
-      sorted = true;
     });
     sorting_thread.detach();
   };
-
-  float y_size;
 
   while (window.isOpen()) {
     sf::Event event;
@@ -82,67 +79,34 @@ int main() {
 
     // Process inputs
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {         // Shuffle
-      main_view.shuffle();
-      sorted = false;
+      base->shuffle();
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
       run_sorting_thread(bubble_sort);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
       run_sorting_thread(bogo_sort);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+      sorting = true;
+
+      sorting_thread = std::thread([base, &sorting, &base_mutex](){
+        quick_sort(base);
+        // main_view.reset_metadata();
+        sorting = false;
+        
+        {
+          std::cout << "Assimilating..." << std::endl;
+          std::lock_guard<std::mutex> base_lock(base_mutex);
+          base->clear_children();
+          //base->assimilate_children();
+        }
+      });
+      sorting_thread.detach();
     }
 
     // Draw
     window.clear(sf::Color::Black);
-
-    for (size_t idx = 0; idx < main_view.size(); ++idx) {
-      const size_t val = main_view.instant_access(idx);
-      y_size = (static_cast<float>(val+1) /
-                static_cast<float>(main_view.size())) *
-               static_cast<float>(constants::WINDOW_HEIGHT);
-
-      // Set position and size
-      base_shape.setSize(sf::Vector2f(bar_step, y_size));
-      base_shape.setPosition(bar_step * idx, constants::WINDOW_HEIGHT - y_size);
-
-      // Set colour
-      base_shape.setFillColor(sf::Color::White);
-
-      if (sorted) {
-        base_shape.setFillColor(sf::Color::Green);
-      } /* else {
-        const int* swapping = main_view.get_swapping();
-        int val_swapped = -1;
-        if (idx == swapping[0]) {
-          val_swapped = 0;
-        } else if (idx == swapping[1]) {
-          val_swapped = 1;
-        }
-
-        if (val_swapped > 0) {
-          base_shape.setFillColor(sf::Color::Red);
-
-          // AUDIO
-          if (sort_array.get_swap_change()) {  // If swap has changed, play a sound
-            beep1.setPitch(get_pitch(val, sort_array.size()));
-            if (val_swapped == 0) {
-              beep2.setPitch(get_pitch(swapping[1], sort_array.size()));
-            } else {
-              beep2.setPitch(get_pitch(swapping[0], sort_array.size()));
-            }
-
-            beep1.play();
-            beep2.play();
-            sort_array.reset_swap_change();
-          }
-          // -----
-        } else {
-          const int acc = sort_array.get_accessing();
-          if (idx == acc) {
-            base_shape.setFillColor(sf::Color::Cyan);
-          }
-        }
-      } */
-
-      window.draw(base_shape);
+    {
+      std::lock_guard<std::mutex> base_lock(base_mutex);
+      base->render(window, base_shape);
     }
 
     window.display();
