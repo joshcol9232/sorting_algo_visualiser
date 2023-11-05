@@ -3,7 +3,6 @@
 #include <atomic>
 #include "constants.h"
 
-#define DEBUG
 
 namespace {
   void copy() {

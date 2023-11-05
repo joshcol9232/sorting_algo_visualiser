@@ -14,10 +14,6 @@
 #include <chrono>
 #include <thread>
 
-
-#define DEBUG
-
-
 namespace {
   // Functions that cause side effects when doing the following actions
   void access(const int idx) {

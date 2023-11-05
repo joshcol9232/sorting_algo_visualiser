@@ -16,10 +16,13 @@
 #include "Element.h"
 #include "sorting_algorithms.h"
 
+//#define DEBUG
+
+
 namespace {
 
 float get_pitch(size_t value, size_t data_size) {
-  return ((static_cast<float>(value)+1.0) /
+  return ((static_cast<float>(value) + 1.0) /
            static_cast<float>(data_size)) *
            constants::PITCH_MULTIPLIER + 0.1;
 }
@@ -69,7 +72,6 @@ int main() {
 
   bool sorted = true;
   bool sorting = false;
-  bool shuffling = false;
   std::thread sorting_thread;
 
   const float bar_step = static_cast<float>(constants::WINDOW_WIDTH) /
@@ -79,7 +81,7 @@ int main() {
 
   float y_size;
 
-  auto run_sorting_thread = [&](std::function<void(StatArray<Element<size_t>>::Iterator, StatArray<Element<size_t>>::Iterator)> F) {
+  auto run_sorting_thread = [&](const std::function<void(StatArray<Element<size_t>>::Iterator, StatArray<Element<size_t>>::Iterator)>& F) {
     // Join previous thread
     if (sorting_thread.joinable()) { sorting_thread.join(); }
 
@@ -93,15 +95,15 @@ int main() {
     //sorting_thread.detach();
   };
 
-  auto shuffle = [&]() {
+  auto non_sort = [&](const std::function<void()>& F) {
     if (sorting_thread.joinable()) { sorting_thread.join(); }
 
-    shuffling = true;
+    sorting = true;
     sorted = false;
 
     sorting_thread = std::thread([&]() {
-      main_array.shuffle();
-      shuffling = false;
+      F();
+      sorting = false;
     });
   };
 
@@ -115,9 +117,12 @@ int main() {
 
     using IteratorType = StatArray<Element<size_t>>::Iterator;
     // Process inputs
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !shuffling) {
-      std::cout << "SHUFFLING :)" << std::endl;
-      shuffle();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !sorting) {
+      std::cout << "SHUFFLING" << std::endl;
+      non_sort([&]() { main_array.shuffle(); });
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) && !sorting) {
+      std::cout << "REVERSING" << std::endl;
+      non_sort([&]() { std::reverse(main_array.begin(), main_array.end()); });
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
       run_sorting_thread(std::sort<IteratorType>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
@@ -128,6 +133,8 @@ int main() {
       run_sorting_thread(quicksort<IteratorType>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
       run_sorting_thread(merge_sort_in_place<IteratorType>);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
+      run_sorting_thread(heap_sort<IteratorType>);
     }
 
     // Draw

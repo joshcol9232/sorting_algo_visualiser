@@ -125,3 +125,13 @@ void merge_sort_in_place(const iterator_type l, const iterator_type r) {
   }
 }
 
+
+template<typename iterator_type>
+void heap_sort(const iterator_type start, const iterator_type end) {
+  std::cout << "heap_sort> Making heap..." << std::endl;
+  std::make_heap(start, end);
+  std::cout << "heap_sort> Heap made. Sorting..." << std::endl;
+  std::sort_heap(start, end);
+  std::cout << "heap_sort> Sorted!" << std::endl;
+}
+
