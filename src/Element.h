@@ -26,8 +26,7 @@ template<typename T>
 class Element {
  public:
   Element() : inner_{} {}
-  Element(T in) : inner_(in) {}
-  Element(T&& in) : inner_(in) {}
+  explicit Element(T in) : inner_(in) {}
 
   // Copy
   Element(const Element& other) :

@@ -210,6 +210,13 @@ class StatArray {
 
   size_t size() const { return data_.size(); }
 
+  void grow() {
+    data_.push_back(T(size()));
+  }
+  void shrink() {
+    data_.erase(std::remove(data_.begin(), data_.end(), T(size() - 1)), data_.end());
+  }
+
   const T& instant_immutable_access(size_t idx) const { return data_[idx]; }
   T& instant_mutable_access(size_t idx) { return data_[idx]; }
 
