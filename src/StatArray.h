@@ -89,11 +89,11 @@ class StatArray {
     Iterator operator--(int) { Iterator tmp = *this; --(*this); return tmp; }
 
     // Arithmetic
-    Iterator& operator+=(difference_type offset) { m_ptr_ += offset; return this; }
+    Iterator& operator+=(difference_type offset) { m_ptr_ += offset; return *this; }
     Iterator operator+(difference_type offset) const { return Iterator(parent_, m_ptr_ + offset); }
     friend Iterator operator+(difference_type offset, const Iterator& right) { return Iterator(right.parent_, offset + right.m_ptr_); }
 
-    Iterator& operator-=(difference_type offset) { m_ptr_ -= offset; return this; }
+    Iterator& operator-=(difference_type offset) { m_ptr_ -= offset; return *this; }
     Iterator operator-(difference_type offset) const { return Iterator(parent_, m_ptr_ - offset); }
     difference_type operator-(const Iterator& right) const { return m_ptr_ - right.m_ptr_; }
 
