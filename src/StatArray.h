@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+#include <random>
 #include <vector>
 #include <unordered_map>
 #include <iterator>
@@ -12,14 +13,22 @@
 #include <chrono>
 #include <thread>
 
+
+#define DEBUG
+
+
 namespace {
   // Functions that cause side effects when doing the following actions
-  void access() {
-    std::cout << "ACCESS" << std::endl;
+  void access(const int idx) {
+#ifdef DEBUG
+    std::cout << "ACCESS: (" << idx << ")" << std::endl;
+#endif
     sf::sleep(constants::ACCESS_COST);
   }
-  void compare() {
-    std::cout << "COMPARE" << std::endl;
+  void compare(const int idx_a, const int idx_b) {
+#ifdef DEBUG
+    std::cout << "COMPARE: (" << idx_a << ", " << idx_b << ")" << std::endl;
+#endif
     sf::sleep(constants::COMPARISON_COST);
   }
 }
@@ -63,15 +72,15 @@ class StatArray {
 
     // === ACCESSORS - all have a sleep ===
     reference operator*() const {
-      access();
+      access(distance_from_start());
       return *m_ptr_;
     }
     pointer operator->() {
-      access();
+      access(distance_from_start());
       return m_ptr_;
     }
     reference operator[](difference_type offset) const {
-      access();
+      access(distance_from_start());
       return m_ptr_[offset];
     }
     // ====================================
@@ -99,27 +108,21 @@ class StatArray {
     // === Comparison operators ===
     //  All have sleeps
     friend bool operator==(const Iterator& a, const Iterator& b) {
-      compare();
       return a.m_ptr_ == b.m_ptr_;
     }
     friend bool operator!=(const Iterator& a, const Iterator& b) {
-      compare();
       return a.m_ptr_ != b.m_ptr_;
     }
     friend bool operator<(const Iterator& a, const Iterator& b) {
-      compare();
       return a.m_ptr_ < b.m_ptr_;
     }
     friend bool operator<=(const Iterator& a, const Iterator& b) {
-      compare();
       return a.m_ptr_ <= b.m_ptr_;
     }
     friend bool operator>(const Iterator& a, const Iterator& b) {
-      compare();
       return a.m_ptr_ > b.m_ptr_;
     }
     friend bool operator>=(const Iterator& a, const Iterator& b) {
-      compare();
       return a.m_ptr_ >= b.m_ptr_;
     }
     // ============================
@@ -175,15 +178,23 @@ class StatArray {
   void print_active() const {
     std::cout << "StatArray::print_active> Start." << std::endl;
 
-    sf::sleep(constants::ACCESS_COST);
-    sf::sleep(constants::ACCESS_COST);
-
     for (const auto& ele : active_) {
       std::cout << '\t' << ele.first << " : " << ele.second->distance_from_start() << std::endl;
     }
     std::cout << "StatArray::print_active> End." << std::endl;
   }
 
+  size_t size() const { return data_.size(); }
+
+  const T& instant_immutable_access(size_t idx) const { return data_[idx]; }
+
+  void shuffle() {
+    std::cout << "StatArray::shuffle starting." << std::endl;
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(begin(), end(), g);
+    std::cout << "StatArray::shuffle finished." << std::endl;
+  }
 
   Iterator begin() { return Iterator(*this, &data_[0]); }
   Iterator end() { return Iterator(*this, &data_[data_.size()]); }

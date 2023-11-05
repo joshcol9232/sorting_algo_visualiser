@@ -28,6 +28,7 @@ float get_pitch(size_t value, size_t data_size) {
 }  // namespace
 
 int main() {
+  /*
   StatArray<int> aArray(std::vector<int>{1, 2, 4, 3});
   using val_type = StatArray<int>::Iterator::value_type;
 
@@ -35,24 +36,27 @@ int main() {
 
   std::cout << aArray << std::endl;
 
-  std::thread thread_obj(&StatArray<int>::print_active, &aArray);
-  std::sort(aArray.begin(), aArray.end());
-  thread_obj.join();
+  std::thread thread_obj(&std::sort<StatArray<int>::Iterator>, aArray.begin(), aArray.end());
+  
+  sf::sleep(constants::ACCESS_COST);
+  aArray.print_active();
 
-  /*
-  // setup
+  thread_obj.join();
+  */
+  // ----------
+
   sf::RenderWindow window(sf::VideoMode(constants::WINDOW_WIDTH,
                                         constants::WINDOW_HEIGHT),
                           "Sorting Visualiser");
 
-//  window.setFramerateLimit(60);
-  auto data = std::make_shared<std::vector<size_t>>(constants::NUM_ELEMENTS, 0);
-  std::iota(data->begin(), data->end(), 0);
-
-  SortView main_view(data, 0, data->size());
+  window.setFramerateLimit(60);
+  auto data = std::vector<size_t>(constants::NUM_ELEMENTS, 0);
+  std::iota(data.begin(), data.end(), 0);
+  StatArray<size_t> main_array(std::move(data));
 
   // ------ Load sound ------
 
+  /*
   sf::SoundBuffer snd_buff;
   if (!snd_buff.loadFromFile(constants::SOUND_FILE)) {
     throw std::runtime_error("Could not load sound.");
@@ -61,31 +65,48 @@ int main() {
   sf::Sound beep2;
   beep1.setBuffer(snd_buff);
   beep2.setBuffer(snd_buff);
+  */
 
   // ----------------------------
 
   bool sorted = true;
   bool sorting = false;
+  bool shuffling = false;
   std::thread sorting_thread;
 
   const float bar_step = static_cast<float>(constants::WINDOW_WIDTH) /
-                         main_view.size();
+                         main_array.size();
 
   sf::RectangleShape base_shape(sf::Vector2f(bar_step, 1.0f));
 
-  auto run_sorting_thread = [&](std::function<void(SortView&)> F) {
+  float y_size;
+
+
+  auto run_sorting_thread = [&](std::function<void(StatArray<size_t>::Iterator, StatArray<size_t>::Iterator)> F) {
+    // Join previous thread
+    if (sorting_thread.joinable()) { sorting_thread.join(); }
+
     sorting = true;
 
-    sorting_thread = std::thread([&](){
-      F(main_view);
-//      main_view.reset_metadata();
+    sorting_thread = std::thread([&]() {
+      F(main_array.begin(), main_array.end());
       sorting = false;
       sorted = true;
     });
-    sorting_thread.detach();
+    //sorting_thread.detach();
   };
 
-  float y_size;
+  auto shuffle = [&]() {
+    if (sorting_thread.joinable()) { sorting_thread.join(); }
+
+    shuffling = true;
+    sorted = false;
+
+    sorting_thread = std::thread([&]() {
+      main_array.shuffle();
+      shuffling = false;
+    });
+  };
 
   while (window.isOpen()) {
     sf::Event event;
@@ -96,23 +117,23 @@ int main() {
     }
 
     // Process inputs
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {         // Shuffle
-      main_view.shuffle();
-      sorted = false;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !shuffling) {
+      std::cout << "SHUFFLING :)" << std::endl;
+      shuffle();
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-      run_sorting_thread(bubble_sort);
+      run_sorting_thread(std::sort<StatArray<size_t>::Iterator>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-      run_sorting_thread(bogo_sort);
+      //run_sorting_thread(bogo_sort);
     }
 
     // Draw
     window.clear(sf::Color::Black);
 
-    for (size_t idx = 0; idx < main_view.size(); ++idx) {
-      const size_t val = main_view.instant_access(idx);
+    for (size_t idx = 0; idx < main_array.size(); ++idx) {
+      const size_t val = main_array.instant_immutable_access(idx);
       y_size = (static_cast<float>(val+1) /
-                static_cast<float>(main_view.size())) *
-               static_cast<float>(constants::WINDOW_HEIGHT);
+                static_cast<float>(main_array.size())) *
+                static_cast<float>(constants::WINDOW_HEIGHT);
 
       // Set position and size
       base_shape.setSize(sf::Vector2f(bar_step, y_size));
@@ -123,8 +144,8 @@ int main() {
 
       if (sorted) {
         base_shape.setFillColor(sf::Color::Green);
-      } else {
-        const int* swapping = main_view.get_swapping();
+      } /* else {
+        const int* swapping = main_array.get_swapping();
         int val_swapped = -1;
         if (idx == swapping[0]) {
           val_swapped = 0;
@@ -156,6 +177,7 @@ int main() {
           }
         }
       }
+      */
 
       window.draw(base_shape);
     }
@@ -163,7 +185,6 @@ int main() {
     window.display();
   }
 
-  */
   return 0;
 }
 
