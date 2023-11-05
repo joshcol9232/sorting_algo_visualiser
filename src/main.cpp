@@ -124,6 +124,8 @@ int main() {
       run_sorting_thread(bubble_sort<IteratorType>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
       run_sorting_thread(bogo_sort<IteratorType>);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+      run_sorting_thread(quicksort<IteratorType>);
     }
 
     // Draw

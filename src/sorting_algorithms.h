@@ -45,3 +45,34 @@ void bogo_sort(const iterator_type start, const iterator_type end) {
   }
 }
 
+
+namespace {
+
+template<typename iterator_type>
+iterator_type partition(const iterator_type left, const iterator_type right) {
+  iterator_type i = left - 1;
+  iterator_type it = left;
+
+  while(it < right) {
+    if(*it <= *right) {
+      ++i;
+      std::iter_swap(i, it);
+    }
+    ++it;
+  }
+
+  std::iter_swap(i + 1, right); 
+  return ++i;
+}
+
+}
+
+template<typename iterator_type>
+void quicksort(const iterator_type b, const iterator_type e) {
+  if (std::distance(b, e) > 1) {
+    const iterator_type pivot = partition(b, e - 1);
+    quicksort(b, pivot);
+    quicksort(pivot + 1, e);
+  }
+}
+
