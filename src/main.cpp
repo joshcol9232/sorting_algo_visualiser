@@ -13,6 +13,7 @@
 
 #include "constants.h"
 #include "StatArray.h"
+#include "Element.h"
 
 //#include "sortview.h"
 //#include "sorting_algorithms.h"
@@ -50,9 +51,12 @@ int main() {
                           "Sorting Visualiser");
 
   window.setFramerateLimit(60);
-  auto data = std::vector<size_t>(constants::NUM_ELEMENTS, 0);
-  std::iota(data.begin(), data.end(), 0);
-  StatArray<size_t> main_array(std::move(data));
+  auto nums = std::vector<size_t>(constants::NUM_ELEMENTS, 0);
+  std::iota(nums.begin(), nums.end(), 0);
+  std::vector<Element<size_t>> data(constants::NUM_ELEMENTS);
+  for (size_t idx = 0; idx < constants::NUM_ELEMENTS; ++idx) { data[idx] = Element(nums[idx]); }
+
+  StatArray<Element<size_t>> main_array(std::move(data));
 
   // ------ Load sound ------
 
@@ -82,7 +86,7 @@ int main() {
   float y_size;
 
 
-  auto run_sorting_thread = [&](std::function<void(StatArray<size_t>::Iterator, StatArray<size_t>::Iterator)> F) {
+  auto run_sorting_thread = [&](std::function<void(StatArray<Element<size_t>>::Iterator, StatArray<Element<size_t>>::Iterator)> F) {
     // Join previous thread
     if (sorting_thread.joinable()) { sorting_thread.join(); }
 
@@ -121,7 +125,7 @@ int main() {
       std::cout << "SHUFFLING :)" << std::endl;
       shuffle();
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-      run_sorting_thread(std::sort<StatArray<size_t>::Iterator>);
+      run_sorting_thread(std::sort<StatArray<Element<size_t>>::Iterator>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
       //run_sorting_thread(bogo_sort);
     }
@@ -130,7 +134,8 @@ int main() {
     window.clear(sf::Color::Black);
 
     for (size_t idx = 0; idx < main_array.size(); ++idx) {
-      const size_t val = main_array.instant_immutable_access(idx);
+      Element<size_t>& element = main_array.instant_mutable_access(idx);
+      const size_t val = *element;
       y_size = (static_cast<float>(val+1) /
                 static_cast<float>(main_array.size())) *
                 static_cast<float>(constants::WINDOW_HEIGHT);
@@ -144,7 +149,17 @@ int main() {
 
       if (sorted) {
         base_shape.setFillColor(sf::Color::Green);
-      } /* else {
+      } else {
+        if (main_array.is_active(idx)) {
+          base_shape.setFillColor(sf::Color::Cyan);
+        }
+
+        if (element.just_copied()) {
+          base_shape.setFillColor(sf::Color::Red);
+          element.reset_copy_flag();
+        }
+
+        /*
         const int* swapping = main_array.get_swapping();
         int val_swapped = -1;
         if (idx == swapping[0]) {
@@ -176,8 +191,8 @@ int main() {
             base_shape.setFillColor(sf::Color::Cyan);
           }
         }
+        */
       }
-      */
 
       window.draw(base_shape);
     }

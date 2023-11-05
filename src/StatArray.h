@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <iterator>
+#include <mutex>
 
 #include <SFML/System.hpp>
 
@@ -51,11 +52,11 @@ class StatArray {
     {
       static size_t sLastID_ = 0;
       id_ = sLastID_++;
-      parent_.active_[id_] = this;
+      parent_.insert_active(id_, this);
     }
     ~Iterator() {
       // Remove from parent map
-      parent_.active_.erase(id_);
+      parent_.erase_active(id_);
     }
     Iterator(const Iterator& other) :
       Iterator(other.parent_, other.m_ptr_)
@@ -165,6 +166,13 @@ class StatArray {
   }
   StatArray(std::vector<T>&& v) : data_(v) {}
 
+  StatArray(const StatArray<T>& other) : StatArray(other.data_) {}
+
+  StatArray<T>& operator=(const StatArray<T>& other) {
+    data_ = other.data_;
+    return *this;
+  }
+
   T& operator[](size_t idx) {
     return *(begin() + idx);
   }
@@ -175,18 +183,40 @@ class StatArray {
 
   size_t get_id() const { return id_; }
 
-  void print_active() const {
+  void print_active() {
     std::cout << "StatArray::print_active> Start." << std::endl;
 
+    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
     for (const auto& ele : active_) {
       std::cout << '\t' << ele.first << " : " << ele.second->distance_from_start() << std::endl;
     }
     std::cout << "StatArray::print_active> End." << std::endl;
   }
 
+  bool is_active(const size_t idx) {
+    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+    for (const auto& ele : active_) {
+      if (ele.second->distance_from_start() == idx) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void insert_active(const size_t sub_id, Iterator const* sub) {
+    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+    active_[sub_id] = sub;
+  }
+
+  void erase_active(const size_t sub_id) {
+    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+    active_.erase(sub_id);
+  }
+
   size_t size() const { return data_.size(); }
 
   const T& instant_immutable_access(size_t idx) const { return data_[idx]; }
+  T& instant_mutable_access(size_t idx) { return data_[idx]; }
 
   void shuffle() {
     std::cout << "StatArray::shuffle starting." << std::endl;
@@ -208,6 +238,7 @@ class StatArray {
   std::vector<T> data_;
   // Map of currently active pointers
   std::unordered_map<size_t, Iterator const*> active_;
+  std::mutex active_map_mtx_;
 };
 
 template<typename T>
