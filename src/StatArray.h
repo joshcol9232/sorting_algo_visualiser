@@ -107,7 +107,6 @@ class StatArray {
     }
     
     // === Comparison operators ===
-    //  All have sleeps
     friend bool operator==(const Iterator& a, const Iterator& b) {
       return a.m_ptr_ == b.m_ptr_;
     }

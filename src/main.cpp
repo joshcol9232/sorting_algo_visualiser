@@ -113,14 +113,17 @@ int main() {
       }
     }
 
+    using IteratorType = StatArray<Element<size_t>>::Iterator;
     // Process inputs
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !shuffling) {
       std::cout << "SHUFFLING :)" << std::endl;
       shuffle();
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-      run_sorting_thread(std::sort<StatArray<Element<size_t>>::Iterator>);
+      run_sorting_thread(std::sort<IteratorType>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-      run_sorting_thread(bubble_sort<StatArray<Element<size_t>>::Iterator>);
+      run_sorting_thread(bubble_sort<IteratorType>);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+      run_sorting_thread(bogo_sort<IteratorType>);
     }
 
     // Draw
@@ -154,40 +157,6 @@ int main() {
 
           element.reset_copy_flag();
         }
-
-        /*
-        const int* swapping = main_array.get_swapping();
-        int val_swapped = -1;
-        if (idx == swapping[0]) {
-          val_swapped = 0;
-        } else if (idx == swapping[1]) {
-          val_swapped = 1;
-        }
-
-        if (val_swapped > 0) {
-          base_shape.setFillColor(sf::Color::Red);
-
-          // AUDIO
-          if (sort_array.get_swap_change()) {  // If swap has changed, play a sound
-            beep1.setPitch(get_pitch(val, sort_array.size()));
-            if (val_swapped == 0) {
-              beep2.setPitch(get_pitch(swapping[1], sort_array.size()));
-            } else {
-              beep2.setPitch(get_pitch(swapping[0], sort_array.size()));
-            }
-
-            beep1.play();
-            beep2.play();
-            sort_array.reset_swap_change();
-          }
-          // -----
-        } else {
-          const int acc = sort_array.get_accessing();
-          if (idx == acc) {
-            base_shape.setFillColor(sf::Color::Cyan);
-          }
-        }
-        */
       }
 
       window.draw(base_shape);
