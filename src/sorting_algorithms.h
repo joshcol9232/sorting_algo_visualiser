@@ -46,6 +46,7 @@ void bogo_sort(const iterator_type start, const iterator_type end) {
 }
 
 
+// Quick sorting
 namespace {
 
 template<typename iterator_type>
@@ -73,6 +74,54 @@ void quicksort(const iterator_type b, const iterator_type e) {
     const iterator_type pivot = partition(b, e - 1);
     quicksort(b, pivot);
     quicksort(pivot + 1, e);
+  }
+}
+// -------
+
+
+// Merge sorting
+namespace {
+
+template<typename iterator_type>
+void merge_in_place(iterator_type start, iterator_type mid, const iterator_type end) {
+  iterator_type second_start = mid + 1;
+  if (*mid < *second_start)
+    return;
+
+
+  while (start <= mid && second_start <= end) {
+    if (*start <= *second_start) {  // Then it is in the correct place
+      ++start;
+    } else {
+      // if element 1 is not in the right place, move it until it is.
+      iterator_type it = second_start;
+      const auto value = *it;
+
+      // Shift all elements between element 1 and element 2 right by 1 to insert this element.
+      while (it != start) {
+        *it = *(it - 1);
+        --it;
+      }
+      *start = value;
+
+      ++start;
+      ++mid;
+      ++second_start;
+    }
+  }
+}
+
+}
+
+template<typename iterator_type>
+void merge_sort_in_place(const iterator_type l, const iterator_type r) {
+  if (l < r) {
+    const typename iterator_type::difference_type half_distance = (r - l)/2;
+    const iterator_type m = l + half_distance;
+
+    merge_sort_in_place(l, m);
+    merge_sort_in_place(m + 1, r);
+    merge_in_place(l, m, r);
   }
 }
 

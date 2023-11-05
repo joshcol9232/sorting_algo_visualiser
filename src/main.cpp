@@ -126,6 +126,8 @@ int main() {
       run_sorting_thread(bogo_sort<IteratorType>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
       run_sorting_thread(quicksort<IteratorType>);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+      run_sorting_thread(merge_sort_in_place<IteratorType>);
     }
 
     // Draw
