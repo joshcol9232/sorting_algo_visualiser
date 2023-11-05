@@ -5,26 +5,41 @@
 #include <functional>
 #include <random>
 #include <numeric>
-
+#include <algorithm>
+#include <thread>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
 #include "constants.h"
-#include "sortview.h"
-#include "sorting_algorithms.h"
+#include "StatArray.h"
+
+//#include "sortview.h"
+//#include "sorting_algorithms.h"
 
 namespace {
 
 float get_pitch(size_t value, size_t data_size) {
   return ((static_cast<float>(value)+1.0) /
            static_cast<float>(data_size)) *
-          constants::PITCH_MULTIPLIER + 0.1;
+           constants::PITCH_MULTIPLIER + 0.1;
 }
 
 }  // namespace
 
 int main() {
+  StatArray<int> aArray(std::vector<int>{1, 2, 4, 3});
+  using val_type = StatArray<int>::Iterator::value_type;
+
+  aArray.print_active();
+
+  std::cout << aArray << std::endl;
+
+  std::thread thread_obj(&StatArray<int>::print_active, &aArray);
+  std::sort(aArray.begin(), aArray.end());
+  thread_obj.join();
+
+  /*
   // setup
   sf::RenderWindow window(sf::VideoMode(constants::WINDOW_WIDTH,
                                         constants::WINDOW_HEIGHT),
@@ -108,7 +123,7 @@ int main() {
 
       if (sorted) {
         base_shape.setFillColor(sf::Color::Green);
-      } /* else {
+      } else {
         const int* swapping = main_view.get_swapping();
         int val_swapped = -1;
         if (idx == swapping[0]) {
@@ -140,7 +155,7 @@ int main() {
             base_shape.setFillColor(sf::Color::Cyan);
           }
         }
-      } */
+      }
 
       window.draw(base_shape);
     }
@@ -148,6 +163,7 @@ int main() {
     window.display();
   }
 
+  */
   return 0;
 }
 

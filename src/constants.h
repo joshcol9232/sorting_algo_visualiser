@@ -12,7 +12,8 @@ namespace constants {
 
   const size_t NUM_ELEMENTS = 100;
 
-  const sf::Time ACCESS_COST = sf::microseconds(1);
+  const sf::Time ACCESS_COST = sf::milliseconds(100);
+  const sf::Time COMPARISON_COST = sf::milliseconds(100);
   const sf::Time SWAP_COST_DIV_2 = sf::microseconds(25);
 
   const std::string SOUND_FILE = "./Blop.wav";

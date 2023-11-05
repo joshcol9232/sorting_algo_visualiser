@@ -12,9 +12,11 @@ configure_file(${CMAKE_SOURCE_DIR}/assets/Blop.wav
                COPYONLY)
 
 add_executable(sorting src/main.cpp
-               src/sortview.cpp src/sortview.h
+               src/StatArray.h
+  #src/sortview.cpp src/sortview.h
                src/constants.h
-               src/sorting_algorithms.cpp src/sorting_algorithms.h)
+  #             src/sorting_algorithms.cpp src/sorting_algorithms.h)
+)
 
 target_link_libraries(sorting PRIVATE sfml-audio sfml-graphics sfml-network sfml-system)
 
