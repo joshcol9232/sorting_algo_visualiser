@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <thread>
 
 #include "StatArray.h"
 
@@ -76,6 +77,20 @@ void quicksort(const iterator_type b, const iterator_type e) {
     quicksort(pivot + 1, e);
   }
 }
+
+template<typename iterator_type>
+void quicksort_multithreaded(const iterator_type b, const iterator_type e) {
+  if (std::distance(b, e) > 1) {
+    const iterator_type pivot = partition(b, e - 1);
+
+    std::thread thread1(quicksort_multithreaded<iterator_type>, b, pivot);
+    std::thread thread2(quicksort_multithreaded<iterator_type>, pivot + 1, e);
+
+    thread1.join();
+    thread2.join();
+  }
+}
+
 // -------
 
 
@@ -121,6 +136,23 @@ void merge_sort_in_place(const iterator_type l, const iterator_type r) {
 
     merge_sort_in_place(l, m);
     merge_sort_in_place(m + 1, r);
+    merge_in_place(l, m, r);
+  }
+}
+
+template<typename iterator_type>
+void merge_sort_in_place_multithreaded(const iterator_type l, const iterator_type r) {
+  if (l < r) {
+    const typename iterator_type::difference_type half_distance = (r - l)/2;
+    const iterator_type m = l + half_distance;
+
+
+    std::thread thread1(merge_sort_in_place_multithreaded<iterator_type>, l, m);
+    std::thread thread2(merge_sort_in_place_multithreaded<iterator_type>, m + 1, r);
+
+    thread1.join();
+    thread2.join();
+
     merge_in_place(l, m, r);
   }
 }

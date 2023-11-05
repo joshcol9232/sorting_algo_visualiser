@@ -132,8 +132,12 @@ int main() {
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
       run_sorting_thread(quicksort<IteratorType>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
-      run_sorting_thread(merge_sort_in_place<IteratorType>);
+      run_sorting_thread(quicksort_multithreaded<IteratorType>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
+      run_sorting_thread(merge_sort_in_place<IteratorType>);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
+      run_sorting_thread(merge_sort_in_place_multithreaded<IteratorType>);
+    } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
       run_sorting_thread(heap_sort<IteratorType>);
     }
 
