@@ -101,7 +101,6 @@ void merge_in_place(iterator_type start, iterator_type mid, const iterator_type 
   if (*mid < *second_start)
     return;
 
-
   while (start <= mid && second_start <= end) {
     if (*start <= *second_start) {  // Then it is in the correct place
       ++start;
