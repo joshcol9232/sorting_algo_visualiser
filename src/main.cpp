@@ -60,16 +60,12 @@ int main() {
 
   // ------ Load sound ------
 
-  /*
   sf::SoundBuffer snd_buff;
   if (!snd_buff.loadFromFile(constants::SOUND_FILE)) {
     throw std::runtime_error("Could not load sound.");
   }
   sf::Sound beep1;
-  sf::Sound beep2;
   beep1.setBuffer(snd_buff);
-  beep2.setBuffer(snd_buff);
-  */
 
   // ----------------------------
 
@@ -156,6 +152,9 @@ int main() {
 
         if (element.just_copied()) {
           base_shape.setFillColor(sf::Color::Red);
+          beep1.setPitch(get_pitch(val, main_array.size()));
+          beep1.play();
+
           element.reset_copy_flag();
         }
 
