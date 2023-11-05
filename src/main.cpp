@@ -14,9 +14,7 @@
 #include "constants.h"
 #include "StatArray.h"
 #include "Element.h"
-
-//#include "sortview.h"
-//#include "sorting_algorithms.h"
+#include "sorting_algorithms.h"
 
 namespace {
 
@@ -81,7 +79,6 @@ int main() {
 
   float y_size;
 
-
   auto run_sorting_thread = [&](std::function<void(StatArray<Element<size_t>>::Iterator, StatArray<Element<size_t>>::Iterator)> F) {
     // Join previous thread
     if (sorting_thread.joinable()) { sorting_thread.join(); }
@@ -123,7 +120,7 @@ int main() {
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
       run_sorting_thread(std::sort<StatArray<Element<size_t>>::Iterator>);
     } else if (!sorting && sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-      //run_sorting_thread(bogo_sort);
+      run_sorting_thread(bubble_sort<StatArray<Element<size_t>>::Iterator>);
     }
 
     // Draw
