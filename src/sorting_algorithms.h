@@ -53,17 +53,15 @@ namespace {
 template<typename iterator_type>
 iterator_type partition(const iterator_type left, const iterator_type right) {
   iterator_type i = left - 1;
-  iterator_type it = left;
 
-  while(it < right) {
-    if(*it <= *right) {
+  for (iterator_type it = left; it < right; ++it) {
+    if (*it <= *right) {
       ++i;
       std::iter_swap(i, it);
     }
-    ++it;
   }
 
-  std::iter_swap(i + 1, right); 
+  std::iter_swap(i + 1, right);
   return ++i;
 }
 
