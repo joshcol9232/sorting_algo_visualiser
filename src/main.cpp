@@ -16,6 +16,8 @@
 #include "Element.h"
 #include "sorting_algorithms.h"
 
+#include "viridis_palette.h"
+
 //#define DEBUG
 
 
@@ -25,6 +27,15 @@ float get_pitch(size_t value, size_t data_size) {
   return ((static_cast<float>(value) + 1.0) /
            static_cast<float>(data_size)) *
            constants::PITCH_MULTIPLIER + 0.1;
+}
+
+sf::Color value_to_color(const size_t value, const size_t data_size) {
+  // Set base colour to viridis
+  const float ratio = static_cast<float>(value) / static_cast<float>(data_size);
+  const size_t color_index = static_cast<size_t>(ratio * static_cast<float>(VIRIDIS_PALETTE_LENGTH)) * 3;
+  return sf::Color(static_cast<char>(VIRIDIS[color_index] * 255.0),
+                   static_cast<char>(VIRIDIS[color_index + 1] * 255.0),
+                   static_cast<char>(VIRIDIS[color_index + 2] * 255.0));
 }
 
 }  // namespace
@@ -154,23 +165,23 @@ int main() {
       base_shape.setPosition(bar_step * idx, constants::WINDOW_HEIGHT - y_size);
 
       // Set colour
-      base_shape.setFillColor(sf::Color::White);
+      sf::Color barColor = sf::Color::White;
 
       if (sorted) {
-        base_shape.setFillColor(sf::Color::Green);
+        barColor = sf::Color::Green;
+      } else if (main_array.is_active(idx)) {
+        barColor = sf::Color::Cyan;
+      } else if (element.just_copied()) {
+        barColor = sf::Color::Red;
+        beep1.setPitch(get_pitch(val, main_array.size()));
+        beep1.play();
+
+        element.reset_copy_flag();
       } else {
-        if (main_array.is_active(idx)) {
-          base_shape.setFillColor(sf::Color::Cyan);
-        }
-
-        if (element.just_copied()) {
-          base_shape.setFillColor(sf::Color::Red);
-          beep1.setPitch(get_pitch(val, main_array.size()));
-          beep1.play();
-
-          element.reset_copy_flag();
-        }
+        barColor = value_to_color(val, main_array.size());
       }
+
+      base_shape.setFillColor(barColor);
 
       window.draw(base_shape);
     }

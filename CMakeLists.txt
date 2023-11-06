@@ -16,6 +16,7 @@ add_executable(sorting src/main.cpp
                src/Element.h
                src/constants.h
                src/sorting_algorithms.h
+               src/viridis_palette.h
 )
 
 target_link_libraries(sorting PRIVATE sfml-audio sfml-graphics sfml-network sfml-system)

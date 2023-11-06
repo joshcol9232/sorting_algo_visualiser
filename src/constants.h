@@ -10,7 +10,7 @@ namespace constants {
   const size_t WINDOW_HEIGHT = 1200;
   const size_t WINDOW_WIDTH = 1600;
 
-  const size_t NUM_ELEMENTS = 20;
+  const size_t NUM_ELEMENTS = 200;
 
   const sf::Time ACCESS_COST = sf::microseconds(500);
   const sf::Time COPY_COST = sf::microseconds(500);
