@@ -7,12 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 find_package(SFML 2.5.1 COMPONENTS system graphics audio network REQUIRED)
+
 configure_file(${CMAKE_SOURCE_DIR}/assets/Blop.wav
                ${CMAKE_CURRENT_BINARY_DIR}/Blop.wav
                COPYONLY)
-
-add_subdirectory(test)
-
 
 add_library(sort_visualiser_lib INTERFACE
                src/StatArray.h
@@ -22,6 +20,8 @@ add_library(sort_visualiser_lib INTERFACE
                src/viridis_palette.h
 )
 
+set(TARGET_LIBRARIES sort_visualiser_lib sfml-audio sfml-graphics sfml-network sfml-system)
 add_executable(sorting src/main.cpp)
-target_link_libraries(sorting PRIVATE sort_visualiser_lib sfml-audio sfml-graphics sfml-network sfml-system)
+target_link_libraries(sorting PRIVATE ${TARGET_LIBRARIES})
 
+add_subdirectory(test)
