@@ -11,7 +11,10 @@ configure_file(${CMAKE_SOURCE_DIR}/assets/Blop.wav
                ${CMAKE_CURRENT_BINARY_DIR}/Blop.wav
                COPYONLY)
 
-add_executable(sorting src/main.cpp
+add_subdirectory(test)
+
+
+add_library(sort_visualiser_lib INTERFACE
                src/StatArray.h
                src/Element.h
                src/constants.h
@@ -19,5 +22,6 @@ add_executable(sorting src/main.cpp
                src/viridis_palette.h
 )
 
-target_link_libraries(sorting PRIVATE sfml-audio sfml-graphics sfml-network sfml-system)
+add_executable(sorting src/main.cpp)
+target_link_libraries(sorting PRIVATE sort_visualiser_lib sfml-audio sfml-graphics sfml-network sfml-system)
 
