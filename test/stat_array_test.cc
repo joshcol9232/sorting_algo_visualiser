@@ -1,42 +1,60 @@
 #include <iostream>
+#include <exception>
 
 #include "../src/StatArray.h"
 
 namespace test {
 
-class StatArrayFixture {
- private:
-  static StatArrayFixture& getInstance() {
-    static StatArrayFixture theStatArrayFixture;
-    return theStatArrayFixture;
-  }
+StatArray<int> makeArray(const int size = 8) {
+  std::vector<int> v(size);
+  std::iota(v.begin(), v.end(), 0);
 
- public:
-  static StatArray<int>& array() { return getInstance().array_; }
-  static constexpr size_t size() { return 8; }
+  return StatArray<int>(std::move(v));
+}
 
- private:
-  StatArrayFixture() : array_( std::vector<int>(size()) ) {
-    std::iota(array_.begin(), array_.end(), 0);
-  }
+static StatArray<int>& array() {
+  static StatArray<int> theArray([]() { return makeArray(); }());
+  return theArray;
+}
 
-  StatArray<int> array_;
-};
 
 bool startIsBegin() {
   std::cout << "(test) startIsBegin..." << std::endl;
-  return StatArrayFixture::array()[0] == *(StatArrayFixture::array().begin());
+  return array()[0] == *(array().begin());
 }
 bool endIsEnd() {
   std::cout << "(test) endIsEnd..." << std::endl;
-  return StatArrayFixture::array()[StatArrayFixture::size()-1] == *(StatArrayFixture::array().end() - 1);
+  return array()[array().size()-1] == *(array().end() - 1);
+}
+
+bool grow() {
+  std::cout << "(test) grow..." << std::endl;
+  auto arr = makeArray(10);
+  arr.grow();
+  return arr.size() == 11;
+}
+
+bool shrink() {
+  std::cout << "(test) shrink..." << std::endl;
+  auto arr = makeArray(10);
+  arr.shrink();
+  return arr.size() == 9;
 }
 
 }  // namespace test
 
+
 int main() {
-  if (! test::startIsBegin()) return 1;
-  if (! test::endIsEnd()) return 1;
+  const auto testCases = {
+    test::startIsBegin,
+    test::endIsEnd,
+    test::grow,
+    test::shrink,
+  };
+
+  for (auto& testFunc : testCases) {
+    if (! testFunc()) return 1;
+  }
 
   return 0;
 }

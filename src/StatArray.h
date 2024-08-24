@@ -177,18 +177,6 @@ class StatArray {
     return *(cbegin() + idx);
   }
 
-  size_t get_id() const { return id_; }
-
-  void print_active() {
-    std::cout << "StatArray::print_active> Start." << std::endl;
-
-    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
-    for (const auto& ele : active_) {
-      std::cout << '\t' << ele.first << " : " << ele.second->distance_from_start() << std::endl;
-    }
-    std::cout << "StatArray::print_active> End." << std::endl;
-  }
-
   bool is_active(const size_t idx) {
     std::lock_guard<std::mutex> data_lock(active_map_mtx_);
     for (const auto& ele : active_) {
@@ -197,16 +185,6 @@ class StatArray {
       }
     }
     return false;
-  }
-
-  void insert_active(const size_t sub_id, Iterator const* sub) {
-    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
-    active_[sub_id] = sub;
-  }
-
-  void erase_active(const size_t sub_id) {
-    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
-    active_.erase(sub_id);
   }
 
   size_t size() const { return data_.size(); }
@@ -237,6 +215,28 @@ class StatArray {
   ConstIterator end() const { return cend(); }
 
  private:
+  size_t get_id() const { return id_; }
+
+  void insert_active(const size_t sub_id, Iterator const* sub) {
+    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+    active_[sub_id] = sub;
+  }
+
+  void erase_active(const size_t sub_id) {
+    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+    active_.erase(sub_id);
+  }
+
+  void print_active() {
+    std::cout << "StatArray::print_active> Start." << std::endl;
+
+    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+    for (const auto& ele : active_) {
+      std::cout << '\t' << ele.first << " : " << ele.second->distance_from_start() << std::endl;
+    }
+    std::cout << "StatArray::print_active> End." << std::endl;
+  }
+
   size_t id_;
   std::vector<T> data_;
   // Map of currently active pointers
