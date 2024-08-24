@@ -19,6 +19,14 @@ namespace constants {
   const std::string SOUND_FILE = "./Blop.wav";
   const float PITCH_MULTIPLIER = 4.0;
 
-}
+namespace runtime {
+  bool disableSleeps(const bool disable = false) {
+    static bool doDisable = disable;
+    return doDisable;
+  }
+}  // namespace runtime
+
+}  // namespace constants
+
 
 #endif // CONSTANTS_H

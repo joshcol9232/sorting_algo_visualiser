@@ -22,16 +22,6 @@ void bubble_sort(const iterator_type start, const iterator_type end) {
 }
 
 template<typename iterator_type>
-bool is_sorted(const iterator_type start, const iterator_type end) {
-  for (iterator_type it = start; it != end - 1; ++it) {
-    if (*it > *(it + 1)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-template<typename iterator_type>
 void bogo_sort(const iterator_type start, const iterator_type end) {
   bool sorted = false;
 
@@ -42,7 +32,7 @@ void bogo_sort(const iterator_type start, const iterator_type end) {
 
   while (!sorted) {
     std::iter_swap(start + distrib(gen), start + distrib(gen));
-    sorted = is_sorted(start, end);
+    sorted = std::is_sorted(start, end);
   }
 }
 

@@ -21,13 +21,17 @@ namespace {
 #ifdef DEBUG
     std::cout << "ACCESS: (" << idx << ")" << std::endl;
 #endif
-    sf::sleep(constants::ACCESS_COST);
+
+    if (constants::runtime::disableSleeps() == false)
+      sf::sleep(constants::ACCESS_COST);
   }
   void compare(const int idx_a, const int idx_b) {
 #ifdef DEBUG
     std::cout << "COMPARE: (" << idx_a << ", " << idx_b << ")" << std::endl;
 #endif
-    sf::sleep(constants::COMPARISON_COST);
+
+    if (constants::runtime::disableSleeps() == false)
+      sf::sleep(constants::COMPARISON_COST);
   }
 }
 
@@ -160,7 +164,7 @@ class StatArray {
     static size_t sLastID = 0;
     id_ = sLastID++;
   }
-  StatArray(std::vector<T>&& v) : data_(v) {}
+  explicit StatArray(const std::vector<T> v) : data_(v) {}
 
   StatArray(const StatArray<T>& other) : StatArray(other.data_) {}
 
@@ -200,11 +204,9 @@ class StatArray {
   T& instant_mutable_access(size_t idx) { return data_[idx]; }
 
   void shuffle() {
-    std::cout << "StatArray::shuffle starting." << std::endl;
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(begin(), end(), g);
-    std::cout << "StatArray::shuffle finished." << std::endl;
   }
 
   Iterator begin() { return Iterator(*this, &data_[0]); }

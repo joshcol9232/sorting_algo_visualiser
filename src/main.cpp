@@ -44,6 +44,8 @@ int main() {
   using ArrayType = StatArray<Element<size_t>>;
   using IteratorType = ArrayType::Iterator;
 
+  constants::runtime::disableSleeps(true);
+
   sf::RenderWindow window(sf::VideoMode(constants::WINDOW_WIDTH,
                                         constants::WINDOW_HEIGHT),
                           "Sorting Visualiser");

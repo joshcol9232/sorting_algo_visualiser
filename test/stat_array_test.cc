@@ -1,5 +1,5 @@
 #include <iostream>
-#include <exception>
+#include <vector>
 
 #include "../src/StatArray.h"
 
