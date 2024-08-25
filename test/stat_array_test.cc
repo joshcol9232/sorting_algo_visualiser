@@ -3,40 +3,30 @@
 
 #include "../src/StatArray.h"
 
+#include "test_tools.h"
+
 namespace test {
-
-StatArray<int> makeArray(const int size = 8) {
-  std::vector<int> v(size);
-  std::iota(v.begin(), v.end(), 0);
-
-  return StatArray<int>(std::move(v));
-}
-
-static StatArray<int>& array() {
-  static StatArray<int> theArray([]() { return makeArray(); }());
-  return theArray;
-}
 
 
 bool startIsBegin() {
   std::cout << "(test) startIsBegin..." << std::endl;
-  return array()[0] == *(array().begin());
+  return tools::statarray_instance()[0] == *(tools::statarray_instance().begin());
 }
 bool endIsEnd() {
   std::cout << "(test) endIsEnd..." << std::endl;
-  return array()[array().size()-1] == *(array().end() - 1);
+  return tools::statarray_instance()[tools::statarray_instance().size()-1] == *(tools::statarray_instance().end() - 1);
 }
 
 bool grow() {
   std::cout << "(test) grow..." << std::endl;
-  auto arr = makeArray(10);
+  StatArray<int> arr(tools::make_int_vec(10));
   arr.grow();
   return arr.size() == 11;
 }
 
 bool shrink() {
   std::cout << "(test) shrink..." << std::endl;
-  auto arr = makeArray(10);
+  StatArray<int> arr(tools::make_int_vec(10));
   arr.shrink();
   return arr.size() == 9;
 }

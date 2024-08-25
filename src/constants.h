@@ -1,5 +1,4 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#pragma once
 
 #include <cstddef>
 #include <string>
@@ -28,5 +27,3 @@ namespace runtime {
 
 }  // namespace constants
 
-
-#endif // CONSTANTS_H

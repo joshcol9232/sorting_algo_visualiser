@@ -2,7 +2,8 @@
 enable_testing()
 
 function(add_test_executable name)
-  add_executable(${name} ${name}.cc)
+  add_executable(${name}
+                 ${name}.cc)
   target_link_libraries(${name} PRIVATE ${TARGET_LIBRARIES})
   add_test(
     NAME ${name}
