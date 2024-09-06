@@ -18,24 +18,22 @@
 
 #include "viridis_palette.h"
 
-//#define DEBUG
+#define DEBUG
 
 
 namespace {
 
-float get_pitch(size_t value, size_t data_size) {
-  return ((static_cast<float>(value) + 1.0) /
-           static_cast<float>(data_size)) *
-           constants::PITCH_MULTIPLIER + 0.1;
+float getPitch(const float valRatio, size_t dataSize) {
+  return valRatio * constants::PITCH_MULTIPLIER + 0.1;
 }
 
-sf::Color value_to_color(const size_t value, const size_t data_size) {
+sf::Color valueToColor(const float valRatio, const size_t dataSize) {
   // Set base colour to viridis
-  const float ratio = static_cast<float>(value) / static_cast<float>(data_size);
-  const size_t color_index = static_cast<size_t>(ratio * static_cast<float>(VIRIDIS_PALETTE_LENGTH)) * 3;
-  return sf::Color(static_cast<char>(VIRIDIS[color_index] * 255.0),
-                   static_cast<char>(VIRIDIS[color_index + 1] * 255.0),
-                   static_cast<char>(VIRIDIS[color_index + 2] * 255.0));
+  const size_t colorIndex = static_cast<size_t>(valRatio * static_cast<float>(VIRIDIS_PALETTE_LENGTH)) * 3 - 3;
+
+  return sf::Color(static_cast<char>(VIRIDIS[colorIndex] * 255.0),
+                   static_cast<char>(VIRIDIS[colorIndex + 1] * 255.0),
+                   static_cast<char>(VIRIDIS[colorIndex + 2] * 255.0));
 }
 
 }  // namespace
@@ -51,57 +49,56 @@ int main() {
                           "Sorting Visualiser");
 
   window.setFramerateLimit(60);
-  auto nums = std::vector<size_t>(constants::NUM_ELEMENTS, 0);
-  std::iota(nums.begin(), nums.end(), 0);
-  std::vector<Element<size_t>> data(constants::NUM_ELEMENTS);
-  for (size_t idx = 0; idx < constants::NUM_ELEMENTS; ++idx) { data[idx] = Element(nums[idx]); }
 
-  ArrayType main_array(std::move(data));
+  std::cout <<"making" << std::endl;
+
+  ArrayType mainArray(constants::NUM_ELEMENTS);
+  std::cout <<"LOADED" << std::endl;
 
   // ------ Load sound ------
 
-  sf::SoundBuffer snd_buff;
-  if (!snd_buff.loadFromFile(constants::SOUND_FILE)) {
+  sf::SoundBuffer sndBuff;
+  if (!sndBuff.loadFromFile(constants::SOUND_FILE)) {
     throw std::runtime_error("Could not load sound.");
   }
   sf::Sound beep1;
-  beep1.setBuffer(snd_buff);
+  beep1.setBuffer(sndBuff);
 
   // ----------------------------
 
   bool sorted = true;
   bool sorting = false;
-  std::thread sorting_thread;
+  std::thread sortingThread;
 
-  auto run_sorting_thread = [&](const std::function<void(IteratorType, IteratorType)>& F) {
+  auto runSortingThread = [&](const std::function<void(IteratorType, IteratorType)>& F) {
     // Join previous thread
-    if (sorting_thread.joinable()) { sorting_thread.join(); }
+    if (sortingThread.joinable()) { sortingThread.join(); }
 
     sorting = true;
 
-    sorting_thread = std::thread([&]() {
-      F(main_array.begin(), main_array.end());
+    sortingThread = std::thread([&]() {
+      F(mainArray.begin(), mainArray.end());
       sorting = false;
       sorted = true;
     });
-    //sorting_thread.detach();
+    //sortingThread.detach();
   };
 
-  auto non_sort = [&](const std::function<void()>& F) {
-    if (sorting_thread.joinable()) { sorting_thread.join(); }
+  auto nonSort = [&](const std::function<void()>& F) {
+    if (sortingThread.joinable()) { sortingThread.join(); }
 
     sorting = true;
     sorted = false;
 
-    sorting_thread = std::thread([&]() {
+    sortingThread = std::thread([&]() {
       F();
       sorting = false;
     });
   };
 
-  float y_size;
-  sf::RectangleShape base_shape(sf::Vector2f(static_cast<float>(constants::WINDOW_WIDTH) /
-                                             main_array.size(), 1.0f));
+  float ySize;
+  sf::RectangleShape baseShape(sf::Vector2f(static_cast<float>(constants::WINDOW_WIDTH) /
+                                             mainArray.size(), 1.0f));
 
   while (window.isOpen()) {
     sf::Event event;
@@ -115,77 +112,88 @@ int main() {
     if (!sorting) {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         std::cout << "SHUFFLING" << std::endl;
-        non_sort([&]() { main_array.shuffle(); });
+        nonSort([&]() { mainArray.shuffle(); });
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
         std::cout << "REVERSING" << std::endl;
-        non_sort([&]() { std::reverse(main_array.begin(), main_array.end()); });
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-        const bool sort_tmp = sorted;
-        non_sort([&]() { main_array.grow(); });
-        sorted = sort_tmp;
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-        const bool sort_tmp = sorted;
-        non_sort([&]() { main_array.shrink(); });
-        sorted = sort_tmp;
+        nonSort([&]() { std::reverse(mainArray.begin(), mainArray.end()); });
+      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add) ||
+                 sf::Keyboard::isKeyPressed(sf::Keyboard::RBracket)) {
+        std::cout << "+" << std::endl;
+        const bool sortTmp = sorted;
+        nonSort([&]() { mainArray.grow(); });
+        sorted = sortTmp;
+      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract) ||
+                 sf::Keyboard::isKeyPressed(sf::Keyboard::LBracket)) {
+        std::cout << "-" << std::endl;
+        const bool sortTmp = sorted;
+        nonSort([&]() { mainArray.shrink(); });
+        sorted = sortTmp;
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
         std::cout << "REVERSING" << std::endl;
-        non_sort([&]() { std::reverse(main_array.begin(), main_array.end()); });
+        nonSort([&]() { std::reverse(mainArray.begin(), mainArray.end()); });
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-        run_sorting_thread(std::sort<IteratorType>);
+        runSortingThread(std::sort<IteratorType>);
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-        run_sorting_thread(bubble_sort<IteratorType>);
+        runSortingThread(bubbleSort<IteratorType>);
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-        run_sorting_thread(bogo_sort<IteratorType>);
+        runSortingThread(bogoSort<IteratorType>);
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-        run_sorting_thread(quicksort<IteratorType>);
+        runSortingThread(quicksort<IteratorType>);
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
-        run_sorting_thread(quicksort_multithreaded<IteratorType>);
+        runSortingThread(quicksortMultithreaded<IteratorType>);
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
-        run_sorting_thread(merge_sort_in_place<IteratorType>);
+        runSortingThread(mergeSortInPlace<IteratorType>);
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
-        run_sorting_thread(merge_sort_in_place_multithreaded<IteratorType>);
+        runSortingThread(mergeSortInPlaceMultithreaded<IteratorType>);
+      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
+        runSortingThread(std::min_element<IteratorType>);
       } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
-        run_sorting_thread(heap_sort<IteratorType>);
+        runSortingThread(heapSort<IteratorType>);
       }
     }
 
     // Draw
     window.clear(sf::Color::Black);
 
-    const float bar_step = static_cast<float>(constants::WINDOW_WIDTH) /
-                           main_array.size();
+    const float barStep = static_cast<float>(constants::WINDOW_WIDTH) /
+                           mainArray.size();
 
-    for (size_t idx = 0; idx < main_array.size(); ++idx) {
-      Element<size_t>& element = main_array.instant_mutable_access(idx);
-      const size_t val = *element;
-      y_size = (static_cast<float>(val+1) /
-                static_cast<float>(main_array.size())) *
-                static_cast<float>(constants::WINDOW_HEIGHT);
+    size_t numBeeps = 0;
+
+    for (size_t idx = 0; idx < mainArray.size(); ++idx) {
+      Element<size_t>& element = mainArray.instantMutableAccess(idx);
+      const float ratio = static_cast<float>(*element + 1) /
+                          static_cast<float>(mainArray.size());
+      ySize = ratio * static_cast<float>(constants::WINDOW_HEIGHT);
 
       // Set position and size
-      base_shape.setSize(sf::Vector2f(bar_step, y_size));
-      base_shape.setPosition(bar_step * idx, constants::WINDOW_HEIGHT - y_size);
+      baseShape.setSize(sf::Vector2f(barStep, ySize));
+      baseShape.setPosition(barStep * idx, constants::WINDOW_HEIGHT - ySize);
 
       // Set colour
       sf::Color barColor = sf::Color::White;
 
       if (sorted) {
         barColor = sf::Color::Green;
-      } else if (main_array.is_active(idx)) {
+      } else if (mainArray.isActive(idx)) {
         barColor = sf::Color::Cyan;
-      } else if (element.just_copied()) {
+      } else if (element.justCopied()) {
         barColor = sf::Color::Red;
-        beep1.setPitch(get_pitch(val, main_array.size()));
-        beep1.play();
 
-        element.reset_copy_flag();
+        if (numBeeps < constants::MAX_BEEPS_PER_FRAME) {
+          beep1.setPitch(getPitch(ratio, mainArray.size()));
+          beep1.play();
+          numBeeps++;
+        }
+
+        element.resetCopyFlag();
       } else {
-        barColor = value_to_color(val, main_array.size());
+        barColor = valueToColor(ratio, mainArray.size());
       }
 
-      base_shape.setFillColor(barColor);
+      baseShape.setFillColor(barColor);
 
-      window.draw(base_shape);
+      window.draw(baseShape);
     }
 
     window.display();

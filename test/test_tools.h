@@ -14,7 +14,7 @@ constexpr size_t kArraySize = 129;
 namespace tools {
 
 
-std::vector<int> make_int_vec(const size_t size = kArraySize) {
+std::vector<int> makeIntVec(const size_t size = kArraySize) {
   std::vector<int> v(size);
   std::iota(v.begin(), v.end(), 0);
   return v;
@@ -28,22 +28,22 @@ void shuffle(iterator_type begin, iterator_type end) {
   std::shuffle(begin, end, g);
 }
 
-std::vector<int>& vec_instance(const bool doShuffle = false) {
+std::vector<int>& vecInstance(const bool doShuffle = false) {
 
-  static std::vector<int> the_vector(make_int_vec());
+  static std::vector<int> theVector(makeIntVec());
 
-  if (doShuffle) { shuffle(the_vector.begin(), the_vector.end()); }
+  if (doShuffle) { shuffle(theVector.begin(), theVector.end()); }
 
-  return the_vector;
+  return theVector;
 }
 
-StatArray<int>& statarray_instance(const bool doShuffle = false) {
+StatArray<int>& statarrayInstance(const bool doShuffle = false) {
 
-  static StatArray<int> the_st_array(std::move(make_int_vec()));
+  static StatArray<int> theStArray(std::move(makeIntVec()));
 
-  if (doShuffle) { the_st_array.shuffle(); }
+  if (doShuffle) { theStArray.shuffle(); }
 
-  return the_st_array;
+  return theStArray;
 }
 
 }  // namespace tools

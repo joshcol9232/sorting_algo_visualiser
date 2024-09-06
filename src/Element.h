@@ -33,18 +33,18 @@ class Element {
     Element(other.inner_)
   {
     copy();
-    just_copied_ = true;
+    justCopied_ = true;
   }
   Element& operator=(const Element& other) {
     copy();
     inner_ = other.inner_;
-    just_copied_ = true;
+    justCopied_ = true;
     return *this;
   }
 
   // Used for rendering when an element is copied
-  bool just_copied() const { return just_copied_.load(); }
-  void reset_copy_flag() { just_copied_.store(false); }
+  bool justCopied() const { return justCopied_.load(); }
+  void resetCopyFlag() { justCopied_.store(false); }
 
   // Reading (no cost)
   const T& operator*() const { return inner_; }
@@ -77,7 +77,7 @@ class Element {
 
  private:
   T inner_;
-  std::atomic_bool just_copied_;
+  std::atomic_bool justCopied_;
 };
 
 

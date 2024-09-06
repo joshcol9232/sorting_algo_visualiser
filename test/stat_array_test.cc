@@ -10,23 +10,23 @@ namespace test {
 
 bool startIsBegin() {
   std::cout << "(test) startIsBegin..." << std::endl;
-  return tools::statarray_instance()[0] == *(tools::statarray_instance().begin());
+  return tools::statarrayInstance()[0] == *(tools::statarrayInstance().begin());
 }
 bool endIsEnd() {
   std::cout << "(test) endIsEnd..." << std::endl;
-  return tools::statarray_instance()[tools::statarray_instance().size()-1] == *(tools::statarray_instance().end() - 1);
+  return tools::statarrayInstance()[tools::statarrayInstance().size()-1] == *(tools::statarrayInstance().end() - 1);
 }
 
 bool grow() {
   std::cout << "(test) grow..." << std::endl;
-  StatArray<int> arr(tools::make_int_vec(10));
+  StatArray<int> arr(tools::makeIntVec(10));
   arr.grow();
   return arr.size() == 11;
 }
 
 bool shrink() {
   std::cout << "(test) shrink..." << std::endl;
-  StatArray<int> arr(tools::make_int_vec(10));
+  StatArray<int> arr(tools::makeIntVec(10));
   arr.shrink();
   return arr.size() == 9;
 }

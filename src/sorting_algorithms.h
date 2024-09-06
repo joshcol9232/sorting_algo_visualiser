@@ -6,7 +6,7 @@
 #include "StatArray.h"
 
 template<typename iterator_type>
-void bubble_sort(const iterator_type start, const iterator_type end) {
+void bubbleSort(const iterator_type start, const iterator_type end) {
   bool sorted = false;
 
   while (!sorted) {
@@ -22,7 +22,7 @@ void bubble_sort(const iterator_type start, const iterator_type end) {
 }
 
 template<typename iterator_type>
-void bogo_sort(const iterator_type start, const iterator_type end) {
+void bogoSort(const iterator_type start, const iterator_type end) {
   bool sorted = false;
 
   // Choose two random elements to swap
@@ -67,12 +67,12 @@ void quicksort(const iterator_type b, const iterator_type e) {
 }
 
 template<typename iterator_type>
-void quicksort_multithreaded(const iterator_type b, const iterator_type e) {
+void quicksortMultithreaded(const iterator_type b, const iterator_type e) {
   if (std::distance(b, e) > 1) {
     const iterator_type pivot = partition(b, e - 1);
 
-    std::thread thread1(quicksort_multithreaded<iterator_type>, b, pivot);
-    std::thread thread2(quicksort_multithreaded<iterator_type>, pivot + 1, e);
+    std::thread thread1(quicksortMultithreaded<iterator_type>, b, pivot);
+    std::thread thread2(quicksortMultithreaded<iterator_type>, pivot + 1, e);
 
     thread1.join();
     thread2.join();
@@ -86,21 +86,21 @@ void quicksort_multithreaded(const iterator_type b, const iterator_type e) {
 namespace {
 
 template<typename iterator_type>
-void merge_in_place(iterator_type start, iterator_type mid, const iterator_type end) {
-  iterator_type second_start = mid + 1;
-  if (*mid < *second_start)
+void mergeInPlace(iterator_type start, iterator_type mid, const iterator_type end) {
+  iterator_type secondStart = mid + 1;
+  if (*mid <= *secondStart)
     return;
 
-  while (start <= mid && second_start <= end) {
-    if (*start <= *second_start) {  // Then it is in the correct place
+  while (start <= mid && secondStart <= end) {
+    if (*start <= *secondStart) {  // Then it is in the correct place
       ++start;
     } else {
       // if element 1 is not in the right place, move it until it is.
-      iterator_type it = second_start;
-      const auto value = *it;
+      // Shift all elements between element 1 and element 2 left by 1 to insert this element.
+      const auto value = *secondStart;
+      iterator_type it = secondStart;
 
-      // Shift all elements between element 1 and element 2 right by 1 to insert this element.
-      while (it != start) {
+      while (it > start) {
         *it = *(it - 1);
         --it;
       }
@@ -108,7 +108,7 @@ void merge_in_place(iterator_type start, iterator_type mid, const iterator_type 
 
       ++start;
       ++mid;
-      ++second_start;
+      ++secondStart;
     }
   }
 }
@@ -116,37 +116,37 @@ void merge_in_place(iterator_type start, iterator_type mid, const iterator_type 
 }
 
 template<typename iterator_type>
-void merge_sort_in_place(const iterator_type l, const iterator_type r) {
+void mergeSortInPlace(const iterator_type l, const iterator_type r) {
   if (l < r) {
-    const typename iterator_type::difference_type half_distance = (r - l)/2;
-    const iterator_type m = l + half_distance;
+    const typename iterator_type::difference_type halfDistance = (r - l)/2;
+    const iterator_type m = l + halfDistance;
 
-    merge_sort_in_place(l, m);
-    merge_sort_in_place(m + 1, r);
-    merge_in_place(l, m, r);
+    mergeSortInPlace(l, m);
+    mergeSortInPlace(m + 1, r);
+    mergeInPlace(l, m, r);
   }
 }
 
 template<typename iterator_type>
-void merge_sort_in_place_multithreaded(const iterator_type l, const iterator_type r) {
+void mergeSortInPlaceMultithreaded(const iterator_type l, const iterator_type r) {
   if (l < r) {
-    const typename iterator_type::difference_type half_distance = (r - l)/2;
-    const iterator_type m = l + half_distance;
+    const typename iterator_type::difference_type halfDistance = (r - l)/2;
+    const iterator_type m = l + halfDistance;
 
 
-    std::thread thread1(merge_sort_in_place_multithreaded<iterator_type>, l, m);
-    std::thread thread2(merge_sort_in_place_multithreaded<iterator_type>, m + 1, r);
+    std::thread thread1(mergeSortInPlaceMultithreaded<iterator_type>, l, m);
+    std::thread thread2(mergeSortInPlaceMultithreaded<iterator_type>, m + 1, r);
 
     thread1.join();
     thread2.join();
 
-    merge_in_place(l, m, r);
+    mergeInPlace(l, m, r);
   }
 }
 
 
 template<typename iterator_type>
-void heap_sort(const iterator_type start, const iterator_type end) {
+void heapSort(const iterator_type start, const iterator_type end) {
   std::cout << "heap_sort> Making heap..." << std::endl;
   std::make_heap(start, end);
   std::cout << "heap_sort> Heap made. Sorting..." << std::endl;

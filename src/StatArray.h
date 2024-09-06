@@ -25,9 +25,9 @@ namespace {
     if (constants::runtime::disableSleeps() == false)
       sf::sleep(constants::ACCESS_COST);
   }
-  void compare(const int idx_a, const int idx_b) {
+  void compare(const int idxA, const int idxB) {
 #ifdef DEBUG
-    std::cout << "COMPARE: (" << idx_a << ", " << idx_b << ")" << std::endl;
+    std::cout << "COMPARE: (" << idxA << ", " << idxB << ")" << std::endl;
 #endif
 
     if (constants::runtime::disableSleeps() == false)
@@ -53,11 +53,11 @@ class StatArray {
     {
       static size_t sLastID_ = 0;
       id_ = sLastID_++;
-      parent_.insert_active(id_, this);
+      parent_.insertActive(id_, this);
     }
     ~Iterator() {
       // Remove from parent map
-      parent_.erase_active(id_);
+      parent_.eraseActive(id_);
     }
     Iterator(const Iterator& other) :
       Iterator(other.parent_, other.m_ptr_)
@@ -74,15 +74,15 @@ class StatArray {
 
     // === ACCESSORS - all have a sleep ===
     reference operator*() const {
-      access(distance_from_start());
+      access(distanceFromStart());
       return *m_ptr_;
     }
     pointer operator->() {
-      access(distance_from_start());
+      access(distanceFromStart());
       return m_ptr_;
     }
     reference operator[](difference_type offset) const {
-      access(distance_from_start());
+      access(distanceFromStart());
       return m_ptr_[offset];
     }
     // ====================================
@@ -102,7 +102,7 @@ class StatArray {
     Iterator operator-(difference_type offset) const { return Iterator(parent_, m_ptr_ - offset); }
     difference_type operator-(const Iterator& right) const { return m_ptr_ - right.m_ptr_; }
 
-    difference_type distance_from_start() const {
+    difference_type distanceFromStart() const {
       // Get distance from beginning of list
       return m_ptr_ - (&parent_.data_[0]);
     }
@@ -164,7 +164,14 @@ class StatArray {
     static size_t sLastID = 0;
     id_ = sLastID++;
   }
-  explicit StatArray(const std::vector<T> v) : data_(v) {}
+  explicit StatArray(const std::vector<T>& v) : data_(v) {}
+
+  explicit StatArray(const size_t size) {
+    data_.reserve(size);
+    for (size_t idx = 0; idx < size; ++idx) {
+      grow();
+    }
+  }
 
   StatArray(const StatArray<T>& other) : StatArray(other.data_) {}
 
@@ -181,10 +188,10 @@ class StatArray {
     return *(cbegin() + idx);
   }
 
-  bool is_active(const size_t idx) {
-    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+  bool isActive(const size_t idx) {
+    std::lock_guard<std::mutex> dataLock(activeMapMtx_);
     for (const auto& ele : active_) {
-      if (ele.second->distance_from_start() == idx) {
+      if (ele.second->distanceFromStart() == idx) {
         return true;
       }
     }
@@ -194,14 +201,14 @@ class StatArray {
   size_t size() const { return data_.size(); }
 
   void grow() {
-    data_.push_back(T(size()));
+    data_.emplace_back(size());
   }
   void shrink() {
     data_.erase(std::remove(data_.begin(), data_.end(), T(size() - 1)), data_.end());
   }
 
-  const T& instant_immutable_access(size_t idx) const { return data_[idx]; }
-  T& instant_mutable_access(size_t idx) { return data_[idx]; }
+  const T& instantImmutableAccess(size_t idx) const { return data_[idx]; }
+  T& instantMutableAccess(size_t idx) { return data_[idx]; }
 
   void shuffle() {
     std::random_device rd;
@@ -217,33 +224,33 @@ class StatArray {
   ConstIterator end() const { return cend(); }
 
  private:
-  size_t get_id() const { return id_; }
+  size_t getID() const { return id_; }
 
-  void insert_active(const size_t sub_id, Iterator const* sub) {
-    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
-    active_[sub_id] = sub;
+  void insertActive(const size_t subID, Iterator const* sub) {
+    std::lock_guard<std::mutex> dataLock(activeMapMtx_);
+    active_[subID] = sub;
   }
 
-  void erase_active(const size_t sub_id) {
-    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
-    active_.erase(sub_id);
+  void eraseActive(const size_t subID) {
+    std::lock_guard<std::mutex> dataLock(activeMapMtx_);
+    active_.erase(subID);
   }
 
-  void print_active() {
-    std::cout << "StatArray::print_active> Start." << std::endl;
+  void printActive() {
+    std::cout << "StatArray::printActive> Start." << std::endl;
 
-    std::lock_guard<std::mutex> data_lock(active_map_mtx_);
+    std::lock_guard<std::mutex> dataLock(activeMapMtx_);
     for (const auto& ele : active_) {
-      std::cout << '\t' << ele.first << " : " << ele.second->distance_from_start() << std::endl;
+      std::cout << '\t' << ele.first << " : " << ele.second->distanceFromStart() << std::endl;
     }
-    std::cout << "StatArray::print_active> End." << std::endl;
+    std::cout << "StatArray::printActive> End." << std::endl;
   }
 
   size_t id_;
   std::vector<T> data_;
   // Map of currently active pointers
   std::unordered_map<size_t, Iterator const*> active_;
-  std::mutex active_map_mtx_;
+  std::mutex activeMapMtx_;
 };
 
 template<typename T>
