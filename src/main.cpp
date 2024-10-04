@@ -14,6 +14,8 @@
 #include "Beeper.h"
 #include "StatArray.h"
 #include "Element.h"
+#include "BarVisual.h"
+#include "Visualisation.h"
 #include "sorting_algorithms.h"
 
 #include "viridis_palette.h"
@@ -82,10 +84,9 @@ int main() {
   };
 
   float ySize;
-  sf::RectangleShape baseShape(sf::Vector2f(static_cast<float>(constants::WINDOW_WIDTH) /
-                                             mainArray.size(), 1.0f));
 
   Beeper beep;
+  std::unique_ptr<Visualisation> visual = std::make_unique<BarVisual>();
 
   while (window.isOpen()) {
     sf::Event event;
@@ -96,6 +97,11 @@ int main() {
     }
 
     // Process inputs
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+      visual = std::make_unique<BarVisual>();
+    }
+
+
     if (!sorting) {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         std::cout << "SHUFFLING" << std::endl;
@@ -142,38 +148,28 @@ int main() {
     // Draw
     window.clear(sf::Color::Black);
 
-    const float barStep = static_cast<float>(constants::WINDOW_WIDTH) /
-                           mainArray.size();
-
     for (size_t idx = 0; idx < mainArray.size(); ++idx) {
       Element<size_t>& element = mainArray.instantMutableAccess(idx);
       const float ratio = static_cast<float>(*element + 1) /
                           static_cast<float>(mainArray.size());
-      ySize = ratio * static_cast<float>(constants::WINDOW_HEIGHT);
-
-      // Set position and size
-      baseShape.setSize(sf::Vector2f(barStep, ySize));
-      baseShape.setPosition(barStep * idx, constants::WINDOW_HEIGHT - ySize);
 
       // Set colour
-      sf::Color barColor = sf::Color::White;
+      sf::Color elementColour = sf::Color::White;
 
       if (sorted) {
-        barColor = sf::Color::Green;
+        elementColour = sf::Color::Green;
       } else if (mainArray.isActive(idx)) {
-        barColor = sf::Color::Cyan;
+        elementColour = sf::Color::Cyan;
       } else if (element.justCopied()) {
-        barColor = sf::Color::Red;
+        elementColour = sf::Color::Red;
         beep.beep(ratio);
 
         element.resetCopyFlag();
       } else {
-        barColor = valueToColor(ratio);
+        elementColour = valueToColor(ratio);
       }
 
-      baseShape.setFillColor(barColor);
-
-      window.draw(baseShape);
+      visual->render(window, { ratio, idx, mainArray.size(), elementColour });
     }
 
     window.display();

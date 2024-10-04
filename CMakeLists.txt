@@ -15,6 +15,8 @@ configure_file(${CMAKE_SOURCE_DIR}/assets/Blop.wav
 add_library(sort_visualiser_lib
                src/constants.cc src/constants.h
                src/Beeper.cc src/Beeper.h
+               src/Visualisation.h
+               src/BarVisual.cc src/BarVisual.h
                src/StatArray.h
                src/Element.h
                src/sorting_algorithms.h
