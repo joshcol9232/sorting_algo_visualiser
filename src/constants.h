@@ -21,10 +21,7 @@ namespace constants {
   const size_t MAX_BEEPS_PER_FRAME = 1;
 
 namespace runtime {
-  bool disableSleeps(const bool disable = false) {
-    static bool doDisable = disable;
-    return doDisable;
-  }
+  bool disableSleeps(const bool disable = false); 
 }  // namespace runtime
 
 }  // namespace constants

@@ -12,10 +12,11 @@ configure_file(${CMAKE_SOURCE_DIR}/assets/Blop.wav
                ${CMAKE_CURRENT_BINARY_DIR}/Blop.wav
                COPYONLY)
 
-add_library(sort_visualiser_lib INTERFACE
+add_library(sort_visualiser_lib
+               src/constants.cc src/constants.h
+               src/Beeper.cc src/Beeper.h
                src/StatArray.h
                src/Element.h
-               src/constants.h
                src/sorting_algorithms.h
                src/viridis_palette.h
 )

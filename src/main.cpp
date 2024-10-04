@@ -9,9 +9,9 @@
 #include <thread>
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 
 #include "constants.h"
+#include "Beeper.h"
 #include "StatArray.h"
 #include "Element.h"
 #include "sorting_algorithms.h"
@@ -23,11 +23,7 @@
 
 namespace {
 
-float getPitch(const float valRatio, size_t dataSize) {
-  return valRatio * constants::PITCH_MULTIPLIER + 0.1;
-}
-
-sf::Color valueToColor(const float valRatio, const size_t dataSize) {
+sf::Color valueToColor(const float valRatio) {
   // Set base colour to viridis
   const size_t colorIndex = static_cast<size_t>(valRatio * static_cast<float>(VIRIDIS_PALETTE_LENGTH)) * 3 - 3;
 
@@ -54,17 +50,6 @@ int main() {
 
   ArrayType mainArray(constants::NUM_ELEMENTS);
   std::cout <<"LOADED" << std::endl;
-
-  // ------ Load sound ------
-
-  sf::SoundBuffer sndBuff;
-  if (!sndBuff.loadFromFile(constants::SOUND_FILE)) {
-    throw std::runtime_error("Could not load sound.");
-  }
-  sf::Sound beep1;
-  beep1.setBuffer(sndBuff);
-
-  // ----------------------------
 
   bool sorted = true;
   bool sorting = false;
@@ -99,6 +84,8 @@ int main() {
   float ySize;
   sf::RectangleShape baseShape(sf::Vector2f(static_cast<float>(constants::WINDOW_WIDTH) /
                                              mainArray.size(), 1.0f));
+
+  Beeper beep;
 
   while (window.isOpen()) {
     sf::Event event;
@@ -158,8 +145,6 @@ int main() {
     const float barStep = static_cast<float>(constants::WINDOW_WIDTH) /
                            mainArray.size();
 
-    size_t numBeeps = 0;
-
     for (size_t idx = 0; idx < mainArray.size(); ++idx) {
       Element<size_t>& element = mainArray.instantMutableAccess(idx);
       const float ratio = static_cast<float>(*element + 1) /
@@ -179,16 +164,11 @@ int main() {
         barColor = sf::Color::Cyan;
       } else if (element.justCopied()) {
         barColor = sf::Color::Red;
-
-        if (numBeeps < constants::MAX_BEEPS_PER_FRAME) {
-          beep1.setPitch(getPitch(ratio, mainArray.size()));
-          beep1.play();
-          numBeeps++;
-        }
+        beep.beep(ratio);
 
         element.resetCopyFlag();
       } else {
-        barColor = valueToColor(ratio, mainArray.size());
+        barColor = valueToColor(ratio);
       }
 
       baseShape.setFillColor(barColor);
