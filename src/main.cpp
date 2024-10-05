@@ -17,6 +17,7 @@
 #include "BarDisparityVisual.h"
 #include "BarVisual.h"
 #include "BarDisparityVisual.h"
+#include "PieVisual.h"
 #include "Visualisation.h"
 #include "sorting_algorithms.h"
 
@@ -41,6 +42,8 @@ void chooseVisualisation(std::unique_ptr<Visualisation>& current) {
     current = std::make_unique<BarVisual>();
   } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
     current = std::make_unique<BarDisparityVisual>();
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+    current = std::make_unique<PieVisual>();
   }
 }
 

@@ -12,9 +12,12 @@ namespace constants {
   constexpr float WINDOW_HEIGHT_F = static_cast<float>(WINDOW_HEIGHT);
   constexpr float WINDOW_WIDTH_F = static_cast<float>(WINDOW_WIDTH);
 
-  constexpr size_t NUM_ELEMENTS = 500;
+  constexpr size_t NUM_ELEMENTS = 200;
 
-  constexpr size_t __TIME_MULT = (size_t)1;
+namespace {
+  constexpr size_t __TIME_MULT = 5;
+}  // namespace
+
   const sf::Time ACCESS_COST = sf::microseconds(500 * __TIME_MULT);
   const sf::Time COPY_COST = sf::microseconds(500 * __TIME_MULT);
   const sf::Time COMPARISON_COST = sf::microseconds(500 * __TIME_MULT);

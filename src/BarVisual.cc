@@ -11,7 +11,7 @@ void BarVisual::render(sf::RenderWindow& window, const ItemDescriptor descriptor
 
   const float barStep = constants::WINDOW_WIDTH_F /
                         static_cast<float>(descriptor.maxIdx);
-  const float ySize = descriptor.ratio * constants::WINDOW_HEIGHT;
+  const float ySize = descriptor.ratio * constants::WINDOW_HEIGHT_F;
 
   // Set position and size
   barShape_.setSize(sf::Vector2f(barStep, ySize));

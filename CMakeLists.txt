@@ -18,6 +18,7 @@ add_library(sort_visualiser_lib
                src/Visualisation.h
                src/BarVisual.cc src/BarVisual.h
                src/BarDisparityVisual.cc src/BarDisparityVisual.h
+               src/PieVisual.cc src/PieVisual.h
                src/StatArray.h
                src/Element.h
                src/sorting_algorithms.h
