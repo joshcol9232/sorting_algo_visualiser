@@ -6,19 +6,22 @@
 
 namespace constants {
 
-  const size_t WINDOW_HEIGHT = 600;
-  const size_t WINDOW_WIDTH  = 800;
+  constexpr size_t WINDOW_HEIGHT = 600;
+  constexpr size_t WINDOW_WIDTH  = 800;
 
-  const size_t NUM_ELEMENTS = 500;
+  constexpr float WINDOW_HEIGHT_F = static_cast<float>(WINDOW_HEIGHT);
+  constexpr float WINDOW_WIDTH_F = static_cast<float>(WINDOW_WIDTH);
 
-  const size_t __TIME_MULT = (size_t)1;
+  constexpr size_t NUM_ELEMENTS = 500;
+
+  constexpr size_t __TIME_MULT = (size_t)1;
   const sf::Time ACCESS_COST = sf::microseconds(500 * __TIME_MULT);
   const sf::Time COPY_COST = sf::microseconds(500 * __TIME_MULT);
   const sf::Time COMPARISON_COST = sf::microseconds(500 * __TIME_MULT);
 
   const std::string SOUND_FILE = "./Blop.wav";
-  const float PITCH_MULTIPLIER = 4.0;
-  const size_t MAX_BEEPS_PER_FRAME = 1;
+  constexpr float PITCH_MULTIPLIER = 4.0;
+  constexpr size_t MAX_BEEPS_PER_FRAME = 1;
 
 namespace runtime {
   bool disableSleeps(const bool disable = false); 

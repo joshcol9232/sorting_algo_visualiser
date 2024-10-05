@@ -14,7 +14,9 @@
 #include "Beeper.h"
 #include "StatArray.h"
 #include "Element.h"
+#include "BarDisparityVisual.h"
 #include "BarVisual.h"
+#include "BarDisparityVisual.h"
 #include "Visualisation.h"
 #include "sorting_algorithms.h"
 
@@ -32,6 +34,14 @@ sf::Color valueToColor(const float valRatio) {
   return sf::Color(static_cast<char>(VIRIDIS[colorIndex] * 255.0),
                    static_cast<char>(VIRIDIS[colorIndex + 1] * 255.0),
                    static_cast<char>(VIRIDIS[colorIndex + 2] * 255.0));
+}
+
+void chooseVisualisation(std::unique_ptr<Visualisation>& current) {
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
+    current = std::make_unique<BarVisual>();
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    current = std::make_unique<BarDisparityVisual>();
+  }
 }
 
 }  // namespace
@@ -86,7 +96,7 @@ int main() {
   float ySize;
 
   Beeper beep;
-  std::unique_ptr<Visualisation> visual = std::make_unique<BarVisual>();
+  std::unique_ptr<Visualisation> visual = std::make_unique<BarDisparityVisual>();  // std::make_unique<BarVisual>();
 
   while (window.isOpen()) {
     sf::Event event;
@@ -97,10 +107,7 @@ int main() {
     }
 
     // Process inputs
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-      visual = std::make_unique<BarVisual>();
-    }
-
+    chooseVisualisation(visual);
 
     if (!sorting) {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {

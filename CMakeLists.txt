@@ -17,6 +17,7 @@ add_library(sort_visualiser_lib
                src/Beeper.cc src/Beeper.h
                src/Visualisation.h
                src/BarVisual.cc src/BarVisual.h
+               src/BarDisparityVisual.cc src/BarDisparityVisual.h
                src/StatArray.h
                src/Element.h
                src/sorting_algorithms.h

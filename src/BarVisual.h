@@ -5,8 +5,8 @@
 class BarVisual : public Visualisation {
  public:
   BarVisual();
-  void render(sf::RenderWindow& window, const ItemDescriptor descriptor) override;
- private:
+  virtual void render(sf::RenderWindow& window, const ItemDescriptor descriptor) override;
+ protected:
   sf::RectangleShape barShape_;
 };
 
