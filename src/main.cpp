@@ -107,53 +107,55 @@ int main() {
     }
 
     // Process inputs
-    chooseVisualisation(visual);
+    if (window.hasFocus()) {
+      chooseVisualisation(visual);
 
-    if (!sorting) {
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        std::cout << "SHUFFLING" << std::endl;
-        nonSort([&]() { mainArray.shuffle(); });
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-        std::cout << "REVERSING" << std::endl;
-        nonSort([&]() { std::reverse(mainArray.begin(), mainArray.end()); });
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add) ||
-                 sf::Keyboard::isKeyPressed(sf::Keyboard::RBracket)) {
-        std::cout << "+" << std::endl;
-        const bool sortTmp = sorted;
-        nonSort([&]() { mainArray.grow(); });
-        sorted = sortTmp;
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract) ||
-                 sf::Keyboard::isKeyPressed(sf::Keyboard::LBracket)) {
-        std::cout << "-" << std::endl;
-        const bool sortTmp = sorted;
-        nonSort([&]() { mainArray.shrink(); });
-        sorted = sortTmp;
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
-        std::cout << "REVERSING" << std::endl;
-        nonSort([&]() { std::reverse(mainArray.begin(), mainArray.end()); });
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-        runSortingThread(std::sort<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-        runSortingThread(bubbleSort<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-        runSortingThread(bogoSort<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-        runSortingThread(quicksort<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
-        runSortingThread(quicksortMultithreaded<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
-        runSortingThread(mergeSortInPlace<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
-        runSortingThread(mergeSortInPlaceMultithreaded<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
-        runSortingThread(std::min_element<IteratorType>);
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
-        runSortingThread(heapSort<IteratorType>);
+      if (!sorting) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+          std::cout << "SHUFFLING" << std::endl;
+          nonSort([&]() { mainArray.shuffle(); });
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+          std::cout << "REVERSING" << std::endl;
+          nonSort([&]() { std::reverse(mainArray.begin(), mainArray.end()); });
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add) ||
+                   sf::Keyboard::isKeyPressed(sf::Keyboard::RBracket)) {
+          std::cout << "+" << std::endl;
+          const bool sortTmp = sorted;
+          nonSort([&]() { mainArray.grow(); });
+          sorted = sortTmp;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract) ||
+                   sf::Keyboard::isKeyPressed(sf::Keyboard::LBracket)) {
+          std::cout << "-" << std::endl;
+          const bool sortTmp = sorted;
+          nonSort([&]() { mainArray.shrink(); });
+          sorted = sortTmp;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+          std::cout << "REVERSING" << std::endl;
+          nonSort([&]() { std::reverse(mainArray.begin(), mainArray.end()); });
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+          runSortingThread(std::sort<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+          runSortingThread(bubbleSort<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+          runSortingThread(bogoSort<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+          runSortingThread(quicksort<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+          runSortingThread(quicksortMultithreaded<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
+          runSortingThread(mergeSortInPlace<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
+          runSortingThread(mergeSortInPlaceMultithreaded<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
+          runSortingThread(std::min_element<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
+          runSortingThread(heapSort<IteratorType>);
+        }
       }
     }
 
     // Draw
-    window.clear(sf::Color::Black);
+    window.clear(sf::Color::White);
 
     for (size_t idx = 0; idx < mainArray.size(); ++idx) {
       Element<size_t>& element = mainArray.instantMutableAccess(idx);
@@ -166,7 +168,7 @@ int main() {
       if (sorted) {
         elementColour = sf::Color::Green;
       } else if (mainArray.isActive(idx)) {
-        elementColour = sf::Color::Cyan;
+        elementColour = sf::Color::Magenta;
       } else if (element.justCopied()) {
         elementColour = sf::Color::Red;
         beep.beep(ratio);
