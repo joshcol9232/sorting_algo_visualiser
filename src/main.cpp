@@ -159,6 +159,8 @@ int main() {
           runSortingThread(mergeSortInPlaceMultithreaded<IteratorType>);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
           runSortingThread(heapSort<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
+          runSortingThread(std::stable_sort<IteratorType>);
         }
       }
     }

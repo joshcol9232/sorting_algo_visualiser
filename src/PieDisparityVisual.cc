@@ -9,7 +9,7 @@ PieDisparityVisual::PieDisparityVisual()
 void PieDisparityVisual::render(sf::RenderWindow& window, const ItemDescriptor descriptor) {
   constexpr float absoluteMaxRadius = std::min(constants::WINDOW_HEIGHT_F/2.0,
                                                constants::WINDOW_WIDTH_F/2.0);
-  constexpr float maxRadiusModifier = 0.9;
+  constexpr float maxRadiusModifier = 0.95;
 
   constexpr float maxRadius = absoluteMaxRadius * maxRadiusModifier;
   constexpr float minRadiusRatio = 0.2;
