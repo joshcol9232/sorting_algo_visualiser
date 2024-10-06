@@ -5,7 +5,7 @@
 #include <random>
 
 #include "test_tools.h"
-#include "../src/sorting_algorithms.h"
+#include "../src/sortingAlgorithms.h"
 #include "../src/constants.h"
 
 

@@ -10,8 +10,7 @@ void BarDisparityVisual::render(sf::RenderWindow& window, const ItemDescriptor d
                         static_cast<float>(descriptor.maxIdx);
   //const float ySize = descriptor.ratio * static_cast<float>(constants::WINDOW_HEIGHT);
   
-  const float disparityRatio = std::abs(descriptor.ratio - (static_cast<float>(descriptor.idx) /
-                               static_cast<float>(descriptor.maxIdx)));
+  const float disparityRatio = descriptor.getDisparity();
   const float ySize = constants::WINDOW_HEIGHT_F * (disparityRatio * (1.0 - minYSizeRatio) + minYSizeRatio);
 
   // Set position and size

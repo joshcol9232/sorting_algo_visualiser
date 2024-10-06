@@ -19,10 +19,11 @@ add_library(sort_visualiser_lib
                src/BarVisual.cc src/BarVisual.h
                src/BarDisparityVisual.cc src/BarDisparityVisual.h
                src/PieVisual.cc src/PieVisual.h
+               src/PieDisparityVisual.cc src/PieDisparityVisual.h
                src/StatArray.h
                src/Element.h
-               src/sorting_algorithms.h
-               src/viridis_palette.h
+               src/sortingAlgorithms.h
+               src/viridisPalette.h
 )
 
 set(TARGET_LIBRARIES sort_visualiser_lib sfml-audio sfml-graphics sfml-network sfml-system)

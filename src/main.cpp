@@ -18,10 +18,11 @@
 #include "BarVisual.h"
 #include "BarDisparityVisual.h"
 #include "PieVisual.h"
+#include "PieDisparityVisual.h"
 #include "Visualisation.h"
-#include "sorting_algorithms.h"
+#include "sortingAlgorithms.h"
 
-#include "viridis_palette.h"
+#include "viridisPalette.h"
 
 #define DEBUG
 
@@ -39,11 +40,17 @@ sf::Color valueToColor(const float valRatio) {
 
 void chooseVisualisation(std::unique_ptr<Visualisation>& current) {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)) {
-    current = std::make_unique<BarVisual>();
-  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-    current = std::make_unique<BarDisparityVisual>();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+      current = std::make_unique<BarDisparityVisual>();
+    } else {
+      current = std::make_unique<BarVisual>();
+    }
   } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
-    current = std::make_unique<PieVisual>();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+      current = std::make_unique<PieDisparityVisual>();
+    } else {
+      current = std::make_unique<PieVisual>();
+    }
   }
 }
 
