@@ -186,23 +186,6 @@ void shellSort(const iterator_type start, const iterator_type end) {
   const size_t size = end - start;
 
   for (const size_t gap : shellSortGaps(size)) {
-    /*
-        # Do a gapped insertion sort for every elements in gaps
-    # Each loop leaves a[0..gap-1] in gapped order
-    for (i = gap; i < n; i += 1)
-    {
-        # save a[i] in temp and make a hole at position i
-        temp = a[i]
-        # shift earlier gap-sorted elements up until the correct location for a[i] is found
-        for (j = i; (j >= gap) && (a[j - gap] > temp); j -= gap)
-        {
-            a[j] = a[j - gap]
-        }
-        # put temp (the original a[i]) in its correct location
-        a[j] = temp
-    }
-    */
-
     for (auto it = start + gap; it != end; ++it) {
       const auto tempVal = *it;
 
