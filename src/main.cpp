@@ -106,7 +106,7 @@ int main() {
   float ySize;
 
   Beeper beep;
-  std::unique_ptr<Visualisation> visual = std::make_unique<BarDisparityVisual>();  // std::make_unique<BarVisual>();
+  std::unique_ptr<Visualisation> visual = std::make_unique<PieDisparityVisual>();
 
   while (window.isOpen()) {
     sf::Event event;
@@ -159,8 +159,6 @@ int main() {
           runSortingThread(mergeSortInPlaceMultithreaded<IteratorType>);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
           runSortingThread(heapSort<IteratorType>);
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
-          runSortingThread(std::min_element<IteratorType>);
         }
       }
     }
