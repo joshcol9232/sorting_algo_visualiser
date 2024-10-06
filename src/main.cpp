@@ -147,7 +147,8 @@ int main() {
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
           runSortingThread(bubbleSort<IteratorType>);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-          runSortingThread(bogoSort<IteratorType>);
+          //runSortingThread(bogoSort<IteratorType>);
+          runSortingThread(shellSort<IteratorType>);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
           runSortingThread(quicksort<IteratorType>);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
@@ -156,10 +157,10 @@ int main() {
           runSortingThread(mergeSortInPlace<IteratorType>);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
           runSortingThread(mergeSortInPlaceMultithreaded<IteratorType>);
-        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
-          runSortingThread(std::min_element<IteratorType>);
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) {
           runSortingThread(heapSort<IteratorType>);
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) {
+          runSortingThread(std::min_element<IteratorType>);
         }
       }
     }

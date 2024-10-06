@@ -75,6 +75,7 @@ int main() {
   // TODO: Fix merge sort.
   //if (test::testSortAlgoVector(mergeSortInPlace<IterTypeV>, "mergeSortInPlace") == false) return 1;
   //if (test::testSortAlgoVector(mergeSortInPlaceMultithreaded<IterTypeV>, "mergeSortInPlaceMultithreaded") == false) return 1;
+  if (test::testSortAlgoVector(shellSort<IterTypeV>, "shellSort") == false) return 1;
 
 
   using IterType = StatArray<int>::Iterator;
@@ -84,6 +85,7 @@ int main() {
   if (test::testSortAlgo(quicksortMultithreaded<IterType>, "quicksortMultithreaded") == false) return 1;
   //if (test::testSortAlgo(mergeSortInPlace<IterType>, "mergeSortInPlace") == false) return 1;
   //if (test::testSortAlgo(mergeSortInPlaceMultithreaded<IterType>, "mergeSortInPlaceMultithreaded") == false) return 1;
+  if (test::testSortAlgo(shellSort<IterType>, "shellSort") == false) return 1;
 
   return 0;
 }
