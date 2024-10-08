@@ -166,6 +166,7 @@ int main() {
     }
 
     // Draw
+    beep.resetCounter();
     window.clear(sf::Color::White);
 
     for (size_t idx = 0; idx < mainArray.size(); ++idx) {
